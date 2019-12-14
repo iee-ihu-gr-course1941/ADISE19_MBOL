@@ -54,7 +54,7 @@
 		else if ($method=="POST")
 			reset_board();
 	}
-	
+	/*
 	function show_players_info($method,$username)
 	{
 		global $mysqli;
@@ -126,7 +126,9 @@
 		}
 		
 	}
-		
+	*/
+	
+	
 	/*USERS FUNCTIONS*/
 	function manipulate_players($method,$request,$input)
 	{

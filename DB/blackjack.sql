@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Φιλοξενητής: 127.0.0.1
--- Χρόνος δημιουργίας: 07 Δεκ 2019 στις 12:29:30
+-- Χρόνος δημιουργίας: 14 Δεκ 2019 στις 13:31:46
 -- Έκδοση διακομιστή: 10.4.8-MariaDB
 -- Έκδοση PHP: 7.3.11
 
@@ -225,16 +225,18 @@ DELIMITER ;
 CREATE TABLE `players` (
   `username` varchar(50) NOT NULL,
   `melos` enum('1','2') NOT NULL,
-  `points` int(11) NOT NULL DEFAULT 0
+  `points` int(11) NOT NULL DEFAULT 0,
+  `token` varchar(32) DEFAULT NULL,
+  `last_action` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Άδειασμα δεδομένων του πίνακα `players`
 --
 
-INSERT INTO `players` (`username`, `melos`, `points`) VALUES
-('Stavros', '1', 0),
-('Koulis', '2', 0);
+INSERT INTO `players` (`username`, `melos`, `points`, `token`, `last_action`) VALUES
+('Stavros', '1', 0, NULL, '2019-12-14 12:25:30'),
+('Giwrgos', '2', 0, NULL, '2019-12-14 12:25:30');
 
 --
 -- Ευρετήρια για άχρηστους πίνακες

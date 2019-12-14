@@ -4,7 +4,10 @@
 	require_once "lib/game.php";
 	
 	$method=$_SERVER['REQUEST_METHOD'];
+
 	//$method="PUT";
+
+	
 	
 	$request=explode('/',trim($_SERVER['PATH_INFO'],'/'));
 	$input = json_decode(file_get_contents('php://input'),true);

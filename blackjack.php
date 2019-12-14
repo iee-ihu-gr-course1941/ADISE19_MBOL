@@ -3,9 +3,9 @@
 	require_once "lib/dbconnect.php";
 	require_once "lib/game.php";
 	
-	$method=$_SERVER['REQUEST_METHOD'];
+	//$method=$_SERVER['REQUEST_METHOD'];
 
-	//$method="PUT";
+	$method="PUT";
 
 	
 	
@@ -13,12 +13,10 @@
 	$input = json_decode(file_get_contents('php://input'),true);
 	
 	
-	//print_r($request);
-	//echo "Input= ".$input;
 	
 	switch ($uri=array_shift($request)) {
 		case "deck ":
-					switch ($par=array_shift($uri)) {
+					switch ($par=array_shift($request)) {
 							case "":	break;
 							case null: manipulate_board($method);
 										break;
@@ -34,10 +32,21 @@
 					}		
 					break;
 		case "players":
-					show_players_info($method,array_shift($request));
-					break; 	
+					switch ($par=array_shift($request))
+					{
+						case "": show_all_players($method);
+											break;
+						/*EMEINA EDW*/
+						case !($par==null) :
+											show_players_info($method,array_shift($request));
+											break; 
+						default:
+								header("HTTP/1.1 404 Not Found");
+								break;
+					}
+					
 		case "status ":
-					if(count($uri)==0)
+					if(count($request)==0)
 						show_status();
 					else{
 						header("HTTP/1.1 404 Not Found");
@@ -74,47 +83,78 @@
 		else if($method=="PUT")
 		{
 		  $id_available=return_available_melos();
+		  echo "id_available:";
 		  echo $id_available;
 		  if($id_available == '' )
 		  {
 			  header("HTTP/1.1 404 Can't handle more Players");
 			  exit;
-		  }
+		  } 
 		  else{
-			$sqlcommand=" INSERT INTO players(username,melos) VALUES(?,'".$id_available."')";
+			$sqlcommand="INSERT INTO players(username,melos,points) VALUES(?,'".$id_available."',0)";
 			$statement=$mysqli->prepare($sqlcommand);
-			$statement->bind_param('s',$username);
+			$statement->bind_param("s",$username);
 			$statement->execute();
+			echo "INSERTION COMPLETE";
 			header("HTTP/1.1 200 OK");
 		  }
 		}
 	}
 	
 	
-	function return_available_melos(){
+	function return_available_melos()
+	{
 		//working
 		global $mysqli;
-		$sqlcommand="SELECT * FROM players";
+		$sqlcommand="SELECT COUNT(*) AS NUMBER FROM players";
 		$statement=$mysqli->query($sqlcommand);
 		$resultSet=$statement->fetch_assoc();
-		echo "------";
-		if(!isset($resultSet)){
-			return '1';
+		$number_of_rows=$resultSet['NUMBER'];
+		
+		if($number_of_rows==0)
+		{
+			return '1';			
 		}
-		else{
+		else if($number_of_rows==1)
+		{
+			$sqlcommand="SELECT melos  FROM players";
+			$statement=$mysqli->query($sqlcommand);
 			$resultSet=$statement->fetch_assoc();
-			if(!isset($resultSet))
-			{
+			echo '$resultSet[melos]';   
+			print_r($resultSet['melos']);
+			if($resultSet['melos']=='1')
 				return '2';
-			}
-			else
-			{
-				return '';
-				
-			}
+			else if($resultSet['melos']=='2')
+				return '1'; 
+		}
+		else if($number_of_rows>1)
+		{
+			return '';
+			
 		}
 		
 	}
+		
+	
+	
+	function show_all_players($method)
+	{
+		global $mysqli;
+		if($method=="GET")
+		{
+			$sqlcommand="SELECT * FROM players";
+			$resultSet=$mysqli->query($sqlcommand);
+			print json_encode($resultSet->fetch_all(MYSQLI_ASSOC),JSON_PRETTY_PRINT);
+			header("HTTP/1.1 200 OK");
+			
+		}
+		else
+		{
+				header("HTTP/1.1 404 Not Found");
+		}
+		
+	}
+	
 	/*
 	function hit_card($method)
 	{

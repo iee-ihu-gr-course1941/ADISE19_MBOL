@@ -3,8 +3,8 @@
 	require_once "lib/dbconnect.php";
 	require_once "lib/game.php";
 	
-	//$method=$_SERVER['REQUEST_METHOD'];
-	$method="PUT";
+	$method=$_SERVER['REQUEST_METHOD'];
+	//$method="PUT";
 	
 	$request=explode('/',trim($_SERVER['PATH_INFO'],'/'));
 	$input = json_decode(file_get_contents('php://input'),true);
@@ -86,28 +86,31 @@
 		  }
 		}
 	}
-	/*EMEINA EDW STO TI THA GINEI AN DWSOUME KAI TRITO INSERT*/
+	
+	
 	function return_available_melos(){
+		//working
 		global $mysqli;
 		$sqlcommand="SELECT * FROM players";
 		$statement=$mysqli->query($sqlcommand);
 		$resultSet=$statement->fetch_assoc();
+		echo "------";
 		if(!isset($resultSet)){
 			return '1';
 		}
 		else{
-			$sqlcommand="SELECT * FROM players WHERE melos=1";
-			$resultSet=$mysqli->query($sqlcommand);
-			$id=$resultSet->fetch_assoc();
-			if($id['melos']=='1')
+			$resultSet=$statement->fetch_assoc();
+			if(!isset($resultSet))
+			{
 				return '2';
-			else if($id['melos']=='2')
-				return '1';
-			
-			
+			}
 			else
+			{
 				return '';
+				
+			}
 		}
+		
 	}
 	/*
 	function hit_card($method)

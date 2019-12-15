@@ -1,5 +1,18 @@
 <?php 
 	//DONE
+	function return_current_status()
+	{
+		global $mysqli;
+		$sqlcommand="SELECT status,turn,result,last_change FROM game_status";
+		$statement=$mysqli->prepare($sqlcommand);
+		$statement->execute();
+		$result=$statement->get_result();
+		$status=$result->fetch_assoc();
+		return $status;
+		
+	}
+
+	//DONE
 	function show_status()
 	{
 		global $mysqli;
@@ -31,14 +44,14 @@
 		$status=$result->fetch_assoc();
 		
 		/*ELEGXO GIA AUTOUS POU PREPEI NA FANE TIME OUT*/
-		$sqlcommand="SELECT COUNT(*) AS INACTIVE FROM players WHERE last_action<(NOW() - INTERVAL 5 MINUTE)";//KICK INTERVAL EINAI 5 LEPTA 
+		$sqlcommand="SELECT COUNT(*) AS INACTIVE FROM players WHERE last_action<(NOW() - INTERVAL 1000 MINUTE)";//KICK INTERVAL EINAI 5 LEPTA 
 		$statement=$mysqli->prepare($sqlcommand);
 		$statement->execute();
 		$r=$statement->get_result();
 		$result=$r->fetch_assoc()['INACTIVE'];
 		if($result>0)
 		{
-			$sqlcommand = "UPDATE players SET username='', token=NULL WHERE last_action< (NOW() - INTERVAL 5 MINUTE)";
+			$sqlcommand = "UPDATE players SET username='', token=NULL WHERE last_action< (NOW() - INTERVAL 1000 MINUTE)";
 			$statement = $mysqli->prepare($sqlcommand);
 			$statement->execute();
 			if($status['status']=='STARTED')//AN TO PAIXNIDI EXEI KSEKINISEI KAI O PAIKTHS ARGISEI PANW APO 5 LEPTA NA KANEI ACTION TRWWEI KICK KAI TO STATUS

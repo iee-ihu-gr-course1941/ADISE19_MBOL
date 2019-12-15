@@ -18,7 +18,7 @@
 		
 		$sqlcommand="call reset_cards()";
 		$mysqli->query($sqlcommand);
-		show_board();
+		show_deck();
 		
 	}
 

@@ -1,4 +1,20 @@
 <?php 	
+	//function 
+	function is_melos($token)
+	{
+		global $mysqli;
+		$sqlcommand="SELECT * FROM players WHERE token like ?";
+		$statement=$mysqli->prepare($sqlcommand);
+		$statement->bind_param('s',$token);
+		$statement->execute();
+		$result=$statement->get_result();
+		
+		if($row=$result->fetch_assoc())
+		{
+			return $row['melos'];
+		}
+			return null;
+	}
 	/*DONE*/
 	function show_all_players($method)
 	{

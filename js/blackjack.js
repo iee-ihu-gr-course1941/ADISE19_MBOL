@@ -1,4 +1,4 @@
-var me={token:null,piece_color:null};
+var me={token:null,melos:null};
 var game_status={};
 var board={};
 var last_update=new Date().getTime();

@@ -1,5 +1,7 @@
 <?php 
-	ini_set('display_errors','on' );
+	/*error_reporting(E_ALL);
+	ini_set('display_errors', 1);
+	ini_set('display_errors','on' );*/
 	require_once "lib/board.php";
 	require_once "lib/dbconnect.php";
 	require_once "lib/game.php";
@@ -138,19 +140,36 @@
 			header("HTTP/1.1 400 Bad Request");
 			print json_encode(['errormesg'=>"It is not your turn to play!."]);
 			exit;	
-		}
-		
-		$hitcommand="CALL draw_card()";
-		$updatecommand="UPDATE cards SET used=1 WHERE id=?";
-		
-		$statement=$mysqli->prepare($hitcommand);
-		$statement->execute();
-		$r=$statement->get_result();
-		$result=$r->fetch_assoc();
-		$temp=$mysqli->store_result();
+		}	
+		$statement=$mysqli->query("CALL draw_card()");
+		$result=$statement->fetch_assoc();
+		$statement->close();
 		print_r($result);
-		//Δουλευει μεχρι την γραμμη 151
-		//αμα παω να βαλω και αλλο prepared statement που βγαζει το ερρορ με την bind_param...	
+		free_all_results($mysqli);
+		mark_a_card($result['id']);
+		
+		
+		/*EMEINA EDW LEITOYRGOYN OLA*/
+		
+	}
+	function free_all_results(mysqli $dbCon)
+	{
+		do 
+		{
+			if ($res = $dbCon->store_result()) 
+			{
+				$res->fetch_all(MYSQLI_ASSOC);
+				$res->free();
+			}
+		}while ($dbCon->more_results() && $dbCon->next_result());
+	}
+	function mark_a_card($id)
+	{
+		global $mysqli;
+		$update="UPDATE cards SET used=1 WHERE id=?";
+		$statement=$mysqli->prepare($update);
+        $statement->bind_param('i',$id);
+        $statement->execute();
 	}
 	
 	function stand()

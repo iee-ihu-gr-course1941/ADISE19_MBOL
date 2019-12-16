@@ -152,4 +152,29 @@
 		//Δουλευει μεχρι την γραμμη 151
 		//αμα παω να βαλω και αλλο prepared statement που βγαζει το ερρορ με την bind_param...	
 	}
+	
+	function stand()
+	{
+		$statuscommand="SELECT turn FROM game_status";
+		$statement=$mysqli->prepare($statuscommand);
+		$statement->execute();
+		$result=$statement->get_result();
+		if($result==1)
+		{
+			$new_turn='2';
+			$updatecommand="UPDATE game_status SET turn= ? ";
+			$statement=$mysqli->prepare($updatecommand);
+			$statement->bind_param('s',$new_turn);
+			$statement->execute();
+		}
+		else if($result==2)
+		{
+			check_winner();
+		}
+	}
+	
+	function check_winner()
+	{
+		
+	}
 ?>

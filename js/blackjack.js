@@ -79,3 +79,29 @@ function login_error(data,y,z,c) {
 	var x = data.responseJSON;
 	alert(x.errormesg);
 }
+
+function game_status_update() {
+	$.ajax({url: "blackjack.php/game_status/", success: update_status });
+}
+
+
+
+function update_status(data) {
+	last_update=new Date().getTime();
+	var game_stat_old = game_status;
+	game_status=data[0];
+	update_info();
+	clearTimeout(timer);
+	if(game_status.turn==me.melos &&  me.melos!=null) {
+		x=0;
+		// do play
+		if(game_stat_old.p_turn!=game_status.p_turn) {
+			fill_card();
+		}
+		$('#move_div').show(1000);
+		timer=setTimeout(function() { game_status_update();}, 15000);
+	} else {
+		// must wait for something
+		$('#move_div').hide(1000);
+		timer=setTimeout(function() { game_status_update();}, 4000);
+	}

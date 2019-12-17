@@ -1,8 +1,21 @@
 var me={token:null,melos:null};
 var game_status={};
-var board={};
+var card={};
 var last_update=new Date().getTime();
 var timer=null;
+
+
+$(function () {
+	draw_empty_card();
+	fill_card();
+	
+	$('#blackjack_login').click( login_to_game);
+	$('#blackjack_reset').click( reset_card);
+	$('#move_div').hide();
+	game_status_update();
+});
+
+
 
 
 function login_to_game() {
@@ -11,8 +24,8 @@ function login_to_game() {
 		return;
 	}
 	var ch_seat = $('#ch_seat').val();
-	draw_empty_board(ch_seat);
-	fill_board();
+	draw_empty_card(ch_seat);
+	fill_card();
 	
 	$.ajax({url: "blackjack.php/players/"+ch_seat, 
 			method: 'PUT',
@@ -39,10 +52,30 @@ function login_error(data,y,z,c) {
 function game_status_update() {
 	
 	clearTimeout(timer);
-	$.ajax({url: "blackjack.php/status/", success: update_status,headers: {"X-Token": me.token} });
+	$.ajax({url: "blackjack.php/game_status/", success: update_status,headers: {"X-Token": me.token} });
 }
 
 
 function update_info(){
 	$('#game_info').html("I am Player: "+me.turn+", my name is "+me.username +'<br>Token='+me.token+'<br>Game state: '+game_status.status+', '+ game_status.p_turn+' must play now.')
+}
+
+
+function fill_card() {
+	$.ajax({url: "blackjack.php/card/", 
+		headers: {"X-Token": me.token},
+		success: fill_card_by_data });
+}
+
+
+function reset_card() {
+	$.ajax({url: "blackjack.php/cars/", headers: {"X-Token": me.token}, method: 'POST',  success: fill_card_by_data });
+	$('#move_div').hide();
+	$('#game_initializer').show(2000);
+}
+
+
+function login_error(data,y,z,c) {
+	var x = data.responseJSON;
+	alert(x.errormesg);
 }

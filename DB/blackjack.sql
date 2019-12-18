@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Φιλοξενητής: 127.0.0.1
--- Χρόνος δημιουργίας: 14 Δεκ 2019 στις 13:31:46
+-- Χρόνος δημιουργίας: 18 Δεκ 2019 στις 19:34:54
 -- Έκδοση διακομιστή: 10.4.8-MariaDB
 -- Έκδοση PHP: 7.3.11
 
@@ -203,10 +203,17 @@ INSERT INTO `cards_empty` (`id`, `symbol`, `value`, `color`, `used`, `sxima`) VA
 
 CREATE TABLE `game_status` (
   `status` enum('NOT ACTIVE','INITIALIZED','STARTED','ENDED','TERMINATED') NOT NULL DEFAULT 'NOT ACTIVE',
-  `turn` enum('1','2') NOT NULL,
-  `result` enum('P1W','P2W','DRAW') NOT NULL,
+  `turn` enum('Player','Dealer') DEFAULT NULL,
+  `result` enum('PW','DW','DRAW') DEFAULT NULL,
   `last_change` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Άδειασμα δεδομένων του πίνακα `game_status`
+--
+
+INSERT INTO `game_status` (`status`, `turn`, `result`, `last_change`) VALUES
+('NOT ACTIVE', NULL, 'PW', '2019-12-18 18:33:30');
 
 --
 -- Δείκτες `game_status`
@@ -224,7 +231,7 @@ DELIMITER ;
 
 CREATE TABLE `players` (
   `username` varchar(50) NOT NULL,
-  `melos` enum('1','2') NOT NULL,
+  `melos` enum('Player','Dealer') NOT NULL,
   `points` int(11) NOT NULL DEFAULT 0,
   `token` varchar(32) DEFAULT NULL,
   `last_action` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
@@ -235,8 +242,8 @@ CREATE TABLE `players` (
 --
 
 INSERT INTO `players` (`username`, `melos`, `points`, `token`, `last_action`) VALUES
-('Stavros', '1', 0, NULL, '2019-12-14 12:25:30'),
-('Giwrgos', '2', 0, NULL, '2019-12-14 12:25:30');
+('', 'Player', 0, NULL, '2019-12-18 18:33:30'),
+('', 'Dealer', 0, NULL, '2019-12-18 18:33:30');
 
 --
 -- Ευρετήρια για άχρηστους πίνακες

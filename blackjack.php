@@ -7,12 +7,13 @@
 	require_once "lib/game.php";
 	require_once "lib/users.php";
 	
-	//$method=$_SERVER['REQUEST_METHOD'];
+	$method=$_SERVER['REQUEST_METHOD'];
 
-	$method="GET";
+	//$method="GET";
 	
 	$request=explode('/',trim($_SERVER['PATH_INFO'],'/'));
 	$input = json_decode(file_get_contents('php://input'),true);
+	
 	if(isset($_SERVER['HTTP_X_TOKEN'])) {
 		$input['token']=$_SERVER['HTTP_X_TOKEN'];
 	}
@@ -41,7 +42,13 @@
 										}
 										break;
 							case 'stand':
-										stand_card($method,$input);
+										if($method=="GET")
+											stand_card($input['token']);
+										else
+										{
+											header("HTTP/1.1 400 Bad Request");
+											print json_encode(['errormesg'=>"Method $method not allowed here."]);
+										}	
 										break;
 							default:
 									header("HTTP/1.1 404 Not Found");
@@ -92,15 +99,44 @@
 						print json_encode(['errormesg'=>"Method $method not allowed here."]);
 					}
 					break;
-			case($name!=''):
+			
+			case($name!='Dealer' && $name!='Player'):
 					if($method=="GET")
 					{
 						show_player_info($name);
 					}
-					else if($method=="PUT")
+					else
 					{
-						register_player($name,$input);
+						header("HTTP/1.1 400 Bad Request");
+						print json_encode(['errormesg'=>"Method $method not allowed here."]);
+						
 					}
+					break;
+			
+			case($name=='Player'):
+					if($method=="PUT")
+					{
+						
+						register_player($request);
+					}
+					else
+					{
+						header("HTTP/1.1 400 Bad Request");
+						print json_encode(['errormesg'=>"Method $method not allowed here."]);
+					}
+					break;
+			case($name=='Dealer'):
+					if($method=="PUT")
+					{
+						
+						register_dealer($request);
+					}
+					else
+					{
+						header("HTTP/1.1 400 Bad Request");
+						print json_encode(['errormesg'=>"Method $method not allowed here."]);
+					}
+					break;
 				
 		}
 		
@@ -172,28 +208,68 @@
         $statement->execute();
 	}
 	
-	function stand()
+	function stand_card($token)
 	{
-		$statuscommand="SELECT turn FROM game_status";
+		global $mysqli;
+		if($token=='' || $token==NULL)
+		{
+			header("HTTP/1.1 400 Bad Request");
+			print json_encode(['errormesg'=>"token is not set."]);
+			exit;
+		}
+		
+		$melos=is_melos($token);
+		if($melos==NULL)
+		{
+			header("HTTP/1.1 400 Bad Request");
+			print json_encode(['errormesg'=>"You are not a registered player of this game."]);
+			exit;
+		}
+		$status=return_current_status();
+		if($status['status']!='STARTED')
+		{
+			header("HTTP/1.1 400 Bad Request");
+			print json_encode(['errormesg'=>"Game hasn't started yet. Waiting for a Second Player."]);
+			exit;
+		}
+		if($status['turn'] != $melos){
+			header("HTTP/1.1 400 Bad Request");
+			print json_encode(['errormesg'=>"It is not your turn to play!."]);
+			exit;	
+		}	
+		
+		/*$statuscommand="SELECT turn FROM game_status";
 		$statement=$mysqli->prepare($statuscommand);
 		$statement->execute();
-		$result=$statement->get_result();
-		if($result==1)
+		$result=$statement->get_result();*/
+		
+		if($status['turn']=='Player')
 		{
-			$new_turn='2';
+			$new_turn='Dealer';
 			$updatecommand="UPDATE game_status SET turn= ? ";
 			$statement=$mysqli->prepare($updatecommand);
 			$statement->bind_param('s',$new_turn);
 			$statement->execute();
 		}
-		else if($result==2)
+		else if($status['turn']=='Dealer')
 		{
+			echo "Check Winner";
 			check_winner();
 		}
+		
+		$selectcommand="SELECT * FROM game_status";
+		$statement=$mysqli->query($selectcommand);
+		
+		
+		header('Content-type: application/json');
+		print json_encode($result=$statement->fetch_all(MYSQLI_ASSOC), JSON_PRETTY_PRINT);
+		
+		
 	}
-	
+	/*
 	function check_winner()
 	{
 		
 	}
+	*/
 ?>

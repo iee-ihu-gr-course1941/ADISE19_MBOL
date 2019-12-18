@@ -82,10 +82,10 @@
 		else if($players['C']==2)
 		{
 			$new_status='STARTED';
-			//EDW ELEGXO AN KSEKINAEI TO PAIXNIDI GIA PRWTI FORA NA DWSW TO TURN STON PAIKTH 1
+			//EDW ELEGXO AN KSEKINAEI TO PAIXNIDI GIA PRWTI FORA NA DWSW TO TURN STON PLAYER
 			if($status['turn']==NULL)
 			{
-				$new_turn='1';
+				$new_turn='Player';
 			}
 		}
 		

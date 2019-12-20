@@ -93,7 +93,7 @@
 		$statement=$mysqli->prepare($updatecommand);
 		$statement->bind_param('ss',$new_status,$new_turn);
 		$statement->execute();
-		echo "SUCCESS IN UPDATING GAME STATUS: STATUS IS NOW ".$new_status;
+		
 	}
 
 

@@ -7,9 +7,9 @@
 	require_once "lib/game.php";
 	require_once "lib/users.php";
 	
-	//$method=$_SERVER['REQUEST_METHOD'];
+	$method=$_SERVER['REQUEST_METHOD'];
 
-	$method="POST";
+
 	
 	$request=explode('/',trim($_SERVER['PATH_INFO'],'/'));
 	$input = json_decode(file_get_contents('php://input'),true);

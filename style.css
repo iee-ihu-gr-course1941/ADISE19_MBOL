@@ -1,0 +1,39 @@
+#body {
+	background-image: url(classic-cards/casinos-24.jpg);
+	background-repeat: no-repeat;
+}
+#player-score{
+	font-size:24px;
+	text-shadow:1px;
+	color:red;
+}
+#player-chips{
+	font-size:24px;
+	text-shadow:1px;
+	color:red;
+}
+#deckContainer{
+	height: 100px;
+	width: 100%;
+}
+#dealerContainer {
+	position: relative;
+	width:50%;
+	margin-bottom:150px;
+}
+#small-card{
+	display: none;
+	position: absolute;
+	top: 0px;
+	left: 340px;
+}
+#deck-image{
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	width: auto;
+	position: relative;
+	top: 0px;
+	left: 0px;
+}
+	 

@@ -59,7 +59,13 @@
 	function register_player($request)
 	{
 		global $mysqli;
-		
+		/*
+		if(!isset($input['username'])) {
+			header("HTTP/1.1 400 Bad Request");
+			print json_encode(['errormesg'=>"No username given."]);
+			exit;
+		}
+		*/
 		$melos=$request[0];
 		
 		$select="SELECT username FROM players WHERE melos LIKE 'Player'";
@@ -98,6 +104,14 @@
 	function register_dealer($request)
 	{
 		global $mysqli;
+		/*
+		if(!isset($input['username'])) {
+			header("HTTP/1.1 400 Bad Request");
+			print json_encode(['errormesg'=>"No username given."]);
+			exit;
+		}
+		*/
+		
 		
 		$melos=$request[0];
 		

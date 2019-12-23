@@ -2,13 +2,12 @@
 	/*error_reporting(E_ALL);
 	ini_set('display_errors', 1);
 	ini_set('display_errors','on' );*/
-	require_once "lib/board.php";
+	require_once "lib/deck.php";
 	require_once "lib/dbconnect.php";
 	require_once "lib/game.php";
 	require_once "lib/users.php";
 	
 	$method=$_SERVER['REQUEST_METHOD'];
-
 
 	
 	$request=explode('/',trim($_SERVER['PATH_INFO'],'/'));
@@ -56,7 +55,7 @@
 					}		
 					break;
 		case "players":
-					manipulate_players($method,$request,$input);
+					manipulate_players($method,$request,$input,$input['token']);
 					break;
 		case "status":
 					if(count($request)==0)
@@ -83,7 +82,7 @@
 	
 	
 	/*USERS FUNCTIONS*/
-	function manipulate_players($method,$request,$input)
+	function manipulate_players($method,$request,$input,$token)
 	{
 		switch($name=array_shift($request))
 		{
@@ -91,7 +90,7 @@
 			case null:
 					if ($method=="GET")
 					{
-						show_all_players($method);
+						show_all_players();
 					}
 					else
 					{
@@ -99,45 +98,26 @@
 						print json_encode(['errormesg'=>"Method $method not allowed here."]);
 					}
 					break;
-			
-			case($name!='Dealer' && $name!='Player'):
+			case($name=='Player' || $name=='Dealer'):
 					if($method=="GET")
 					{
 						show_player_info($name);
 					}
-					else
+					else if($method=="PUT")
 					{
-						header("HTTP/1.1 400 Bad Request");
-						print json_encode(['errormesg'=>"Method $method not allowed here."]);
 						
+						register_user($name,$request);
 					}
-					break;
-			
-			case($name=='Player'):
-					if($method=="PUT")
+					else if($method=="POST")
 					{
-						
-						register_player($request);
+						update_points($request,$token);
 					}
 					else
 					{
 						header("HTTP/1.1 400 Bad Request");
 						print json_encode(['errormesg'=>"Method $method not allowed here."]);
 					}
-					break;
-			case($name=='Dealer'):
-					if($method=="PUT")
-					{
-						
-						register_dealer($request);
-					}
-					else
-					{
-						header("HTTP/1.1 400 Bad Request");
-						print json_encode(['errormesg'=>"Method $method not allowed here."]);
-					}
-					break;
-				
+					break;	
 		}
 		
 	}
@@ -199,6 +179,7 @@
 			}
 		}while ($dbCon->more_results() && $dbCon->next_result());
 	}
+	
 	function mark_a_card($id)
 	{
 		global $mysqli;
@@ -253,7 +234,6 @@
 		}
 		else if($status['turn']=='Dealer')
 		{
-			echo "Check Winner";
 			check_winner();
 		}
 		
@@ -266,10 +246,39 @@
 		
 		
 	}
-	/*
+	
 	function check_winner()
 	{
+		global $mysqli;
+		
+		$statement=$mysqli->prepare("SELECT * 
+									FROM players
+									WHERE points=(SELECT MAX(points) FROM players)");
+		$statement->execute();
+		$result=$statement->get_result();
+		$row_count=mysqli_num_rows($result);
+		$r=$result->fetch_assoc();
+		
+		if($row_count==2)
+		{
+			$statement=$mysqli->query("UPDATE game_status SET result='DW'");
+			end_game();
+		}
+		else if ($row_count==1)
+		{
+			
+			if($r['melos']=='Player')
+				$statement=$mysqli->query("UPDATE game_status SET result='PW' ");
+			else if($r['melos']=='Dealer')
+				$statement=$mysqli->query("UPDATE game_status SET result='DW' ");
+			end_game();
+		}
+		else
+		{
+			header("HTTP/1.1 400 Bad Request");
+		}
+		
 		
 	}
-	*/
+	
 ?>

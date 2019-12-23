@@ -96,5 +96,50 @@
 
 	}
 
-
+	function update_points($request,$token)
+	{
+		global $mysqli;
+		$points=$request[0];
+		
+		if($token=='' || $token==NULL)
+		{
+			header("HTTP/1.1 400 Bad Request");
+			print json_encode(['errormesg'=>"token is not set."]);
+			exit;
+		}
+		
+		$melos=is_melos($token);
+		if($melos==NULL)
+		{
+			header("HTTP/1.1 400 Bad Request");
+			print json_encode(['errormesg'=>"Not a registered player,can't update points."]);
+			exit;
+		}
+		
+		$update="UPDATE players SET points= ? WHERE token = ?";
+		$statement=$mysqli->prepare($update);
+		$statement->bind_param('is',$points,$token);
+		$statement->execute();
+		header('HTTP/1.1 200 OK');
+	}
+	
+	function end_game()
+	{
+		global $mysqli;
+		$new_status='ENDED';
+		$new_turn=NULL;
+		$null=NULL;
+		
+		$select="SELECT result FROM game_status";
+		$statement=$mysqli->query($select);
+		print json_encode($result=$statement->fetch_all(MYSQLI_ASSOC) , JSON_PRETTY_PRINT);
+		
+		$updatecommand="UPDATE game_status SET status=?,turn= ? ,result = ?";
+		$statement=$mysqli->prepare($updatecommand);
+		$statement->bind_param('sss',$new_status,$new_turn,$null);
+		$statement->execute();
+		
+		
+	}	
+	
 ?>

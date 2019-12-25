@@ -158,9 +158,11 @@
 			exit;	
 		}	
 		$statement=$mysqli->query("CALL draw_card()");
+		//$result=$statement->fetch_assoc();
+		
+		print json_encode($result=$statement->fetch_all(MYSQLI_ASSOC), JSON_PRETTY_PRINT);
 		$result=$statement->fetch_assoc();
 		$statement->close();
-		print_r($result);
 		free_all_results($mysqli);
 		mark_a_card($result['id']);
 		

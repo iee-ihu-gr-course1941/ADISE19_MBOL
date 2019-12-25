@@ -2,7 +2,7 @@
 	background-image: url(classic-cards/casinos-24.jpg);
 	background-repeat: no-repeat;
 }
-#player-score{
+#player_score{
 	font-size:24px;
 	text-shadow:1px;
 	color:red;
@@ -35,5 +35,75 @@
 	position: relative;
 	top: 0px;
 	left: 0px;
+}
+#cards{
+	display: grid;
+	grid-template-columns: repeat(5	, auto);
+	grid-gap: 730px;
+}
+.card{
+	height: 96px;
+	width: 71px;
+	position: relative;
+	left: 380px;
+	top: 160px;
+}
+#cards_2{
+	display: grid;
+	grid-template-columns: repeat(5	, auto);
+	grid-gap: 730px;
+}
+.card_2{
+	height: 96px;
+	width: 71px;
+	position: relative;
+	left: 400px;
+	top: 120px;
+}
+#cards_3{
+	display: grid;
+	grid-template-columns: repeat(5	, auto);
+	grid-gap: 730px;
+}
+.card_3{
+	height: 96px;
+	width: 71px;
+	position: relative;
+	left: 420px;
+	top: 60px;
+}
+#cards_4{
+	display: grid;
+	grid-template-columns: repeat(5	, auto);
+	grid-gap: 730px;
+}
+.card_4{
+	height: 96px;
+	width: 71px;
+	position: relative;
+	left: 440px;
+	top: 20px;
+}
+#cards_5{
+	display: grid;
+	grid-template-columns: repeat(5	, auto);
+	grid-gap: 730px;
+}
+.card_5{
+	height: 96px;
+	width: 71px;
+	position: relative;
+	left: 460px;
+	top: 0px;
+}
+div.status{
+	color: red;
+	width: 120px;
+	height: 50px;
+	border: 1px solid red;
+	border: 2px solid red;
+	border-radius: 12px;
+	padding: 10px;
+	
 }
 	 

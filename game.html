@@ -15,13 +15,33 @@
 		<script type="text/javascript" src="js/blackjack.js"> </script>                                                              
 	</head> 
 	                                                                 
-	<body id="body">      
+	<body id="body">
 		<div id ="outerContainer">
+			<div class="status" id="status"></div> 
 		<div id="deckContainer">
 			<img id="deck-image" src="classic-cards/b2fv.png" width="71" height="96"/>
 			<img id="small-card" src="classic-cards/b2fv.png" width="35" height="48" />
 		</div>
-		<div id="dealerContainer"></div>
+		<div id="cards">
+			<div class="card" id="card_shown_1"></div>
+			<div class="card" id="card_shown_2"></div>
+		</div>
+		<div id="cards_2">
+			<div class="card_2" id="card_shown_3"></div>
+			<div class="card_2" id="card_shown_4"></div>
+		</div>
+		<div id="cards_3">
+			<div class="card_3" id="card_shown_5"></div>
+			<div class="card_3" id="card_shown_6"></div>
+		</div>
+		<div id="cards_4">
+			<div class="card_4" id="card_shown_7"></div>
+			<div class="card_4" id="card_shown_8"></div>
+		</div>
+		<div id="cards_5">
+			<div class="card_5" id="card_shown_9"></div>
+			<div class="card_5" id="card_shown_10"></div>
+		</div>
 		<div id="container" style="position: relative; left: 0px; height:250px; width:100%"></div>
 			<div id='game_initializer'>
 				<input type="text" id='username'>
@@ -30,22 +50,19 @@
 					<option value='Player'>Player</option>
 				</select>
 				<button id='bj_login' class='btn btn-primary'>ΚΑΘΙΣΕ ΣΤΟ ΤΡΑΠΕΖΙ</button>
-				<button id='bj_reset' class='btn btn-primary'>Έναρξη/Reset</button>
 			</div>
 			<div class="start-game-area" >
-				<button id="take_card">Deal</button>
-				<button id="stop">Hit</button>
-				<button id="stand">Stand</button>
-				
-					
-				
-				<div id="player-score">
+				<button id="take_card" disabled='disabled'>Deal</button>
+				<button id="hit" disabled='disabled'>Hit</button>
+				<button id="stand" disabled='disabled'>Stand</button>
+				<button id='bj_reset' class='btn btn-primary'>Reset</button>
+				<div id="player_score">
 					<b>Player Score:</b>  
-					<div id="player-score-value"> </div>
+					<div id="player-score-value">0</div>
 				</div>
 				<div id="player-chips">
-					<b>Player Chips:</b>
-				   <div id="player-chips-value"></div>
+					<b>Dealer Score:</b>
+				   <div id="player-chips-value">0</div>
 				   
 				</div>
 			</div>

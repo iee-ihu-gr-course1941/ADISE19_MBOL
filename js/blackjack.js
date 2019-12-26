@@ -104,7 +104,6 @@ function login_to_game() {
 
 function login_result(data,y,z,c) {
 	me = data[0];
-	alert(me);
 	$('#game_initializer').hide(1000);
 	update_info();
 }	
@@ -148,10 +147,11 @@ function game_status_update() {
 	
 	
 }
-
+/*
 function update_info(){
-	$('#game_info').html("I am Player: "+me.melos+", my name is "+me.username +'<br>Token='+me.token/*+'<br>Game state: '+game_status.status+', '+ game_status.melos+' must play now.'*/);
+	$('#game_info').html("I am Player: "+me.melos+", my name is "+me.username +'<br>Token='+me.token/*+'<br>Game state: '+game_status.status+', '+ game_status.melos+' must play now.');
 }
+*/
 
 function do_deal() {
 	var simbolo;

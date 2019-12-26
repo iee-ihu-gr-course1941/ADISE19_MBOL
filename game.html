@@ -45,17 +45,17 @@
 		<div id="container" style="position: relative; left: 0px; height:250px; width:100%"></div>
 			<div id='game_initializer'>
 				<input type="text" id='username'>
-				<select id='ch_seat'>
+				<select id='ch_seat' class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					<option value='Dealer'>Dealer</option>
 					<option value='Player'>Player</option>
 				</select>
-				<button id='bj_login' class='btn btn-primary'>ΚΑΘΙΣΕ ΣΤΟ ΤΡΑΠΕΖΙ</button>
+				<button id='bj_login' class='btn btn-success'>ΚΑΘΙΣΕ ΣΤΟ ΤΡΑΠΕΖΙ</button>
 			</div>
 			<div class="start-game-area" >
-				<button id="take_card" disabled='disabled'>Deal</button>
-				<button id="hit" disabled='disabled'>Hit</button>
-				<button id="stand" disabled='disabled'>Stand</button>
-				<button id='bj_reset' class='btn btn-primary'>Reset</button>
+				<button id="take_card" disabled='disabled' class="btn btn-danger">Deal</button>
+				<button id="hit" disabled='disabled' class="btn btn-danger">Hit</button>
+				<button id="stand" disabled='disabled' class="btn btn-danger">Stand</button>
+				<button id='bj_reset' class='btn btn-secondary'>Reset</button>
 				<div id="player_score">
 					<b>Player Score:</b>  
 					<div id="player-score-value">0</div>

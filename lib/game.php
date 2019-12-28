@@ -142,4 +142,30 @@
 		
 	}	
 	
+	function fetch_played_cards($request)
+	{
+		global $mysqli;
+		$melos=$request[0];
+		if($melos != 'Player' && $melos!='Dealer')
+		{
+			print json_encode(['errormesg' =>"You need to fetch the cards of either PLAYER or DEALER ." ]);
+			exit;
+		}
+		else
+		{
+			if($melos=='Player')
+			{
+				$statement=$mysqli->query("SELECT id,symbol,value,sxima FROM cards WHERE player_cards_played=1");
+				header("HTTP/1.1 200 OK");
+				print json_encode($r=$statement->fetch_all(MYSQLI_ASSOC), JSON_PRETTY_PRINT);
+			}
+			else
+			{
+				$statement=$mysqli->query("SELECT id,symbol,value,sxima FROM cards WHERE dealer_cards_played=1");
+				header("HTTP/1.1 200 OK");
+				print json_encode($r=$statement->fetch_all(MYSQLI_ASSOC), JSON_PRETTY_PRINT);
+			}
+		}
+	}
+	
 ?>

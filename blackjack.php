@@ -1,5 +1,6 @@
 <?php 
-	/*error_reporting(E_ALL);
+	/*
+	error_reporting(E_ALL);
 	ini_set('display_errors', 1);
 	ini_set('display_errors','on' );*/
 	require_once "lib/deck.php";
@@ -8,7 +9,6 @@
 	require_once "lib/users.php";
 	
 	$method=$_SERVER['REQUEST_METHOD'];
-
 	
 	$request=explode('/',trim($_SERVER['PATH_INFO'],'/'));
 	$input = json_decode(file_get_contents('php://input'),true);
@@ -43,6 +43,17 @@
 							case 'stand':
 										if($method=="GET")
 											stand_card($input['token']);
+										else
+										{
+											header("HTTP/1.1 400 Bad Request");
+											print json_encode(['errormesg'=>"Method $method not allowed here."]);
+										}	
+										break;
+							case 'fetch':
+										if($method=="GET")
+										{
+											fetch_played_cards($request);
+										}
 										else
 										{
 											header("HTTP/1.1 400 Bad Request");
@@ -157,14 +168,35 @@
 			print json_encode(['errormesg'=>"It is not your turn to play!."]);
 			exit;	
 		}	
-		$statement=$mysqli->query("CALL draw_card()");
-		//$result=$statement->fetch_assoc();
 		
-		print json_encode($result=$statement->fetch_all(MYSQLI_ASSOC), JSON_PRETTY_PRINT);
+		
+		
+		$statement=$mysqli->query("CALL draw_card()");	
+		
 		$result=$statement->fetch_assoc();
-		$statement->close();
-		free_all_results($mysqli);
+		
 		mark_a_card($result['id']);
+		if($melos=='Player')
+		{
+			$stmt=$mysqli->prepare("UPDATE cards SET player_cards_played=1 WHERE id=?");
+			$stmt->bind_param('i',$result['id']);
+			$stmt->execute();		
+		}
+		else if($melos=='Dealer')
+		{
+			$stmt=$mysqli->prepare("UPDATE cards SET dealer_cards_played=1 WHERE id=?");
+			$stmt->bind_param('i',$result['id']);
+			$stmt->execute();		
+		}
+		else
+		{	
+			header("HTTP/1.1 400 Bad Request");
+			header("['errormesh'=>You are neither the Player nor the Dealer.]");
+			exit;
+		}
+		header("HTTP/1.1 200 OK");
+		print json_encode($result, JSON_PRETTY_PRINT);
+		
 		
 		
 		/*EMEINA EDW LEITOYRGOYN OLA*/
@@ -185,7 +217,9 @@
 	function mark_a_card($id)
 	{
 		global $mysqli;
-		$update="UPDATE cards SET used=1 WHERE id=?";
+		free_all_results($mysqli);
+		
+		$update="UPDATE cards SET used=1 WHERE id= ?";	
 		$statement=$mysqli->prepare($update);
         $statement->bind_param('i',$id);
         $statement->execute();

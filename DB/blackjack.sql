@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Φιλοξενητής: 127.0.0.1
--- Χρόνος δημιουργίας: 18 Δεκ 2019 στις 19:34:54
+-- Χρόνος δημιουργίας: 28 Δεκ 2019 στις 12:32:41
 -- Έκδοση διακομιστή: 10.4.8-MariaDB
 -- Έκδοση PHP: 7.3.11
 
@@ -37,7 +37,7 @@ UPDATE cards c
 SET c.used=1
 WHERE c.id=cid$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `reset_cards` ()  REPLACE INTO `cards`(`id`,`symbol`,`value`,`color`,`used`,`sxima`) SELECT `id`,`symbol`,`value`,`color`,`used`,`sxima` FROM `cards_empty`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `reset_cards` ()  REPLACE INTO `cards`(`id`,`symbol`,`value`,`color`,`used`,`sxima`,`player_cards_played`,`dealer_cards_played`) SELECT `id`,`symbol`,`value`,`color`,`used`,`sxima`,`player_cards_played`,`dealer_cards_played` FROM `cards_empty`$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `reset_points` ()  UPDATE players p
 SET p.points=0
@@ -61,66 +61,68 @@ CREATE TABLE `cards` (
   `value` int(11) NOT NULL,
   `color` enum('B','R') DEFAULT NULL,
   `used` tinyint(1) DEFAULT NULL,
-  `sxima` enum('Karo','Trifylli','Bastouni','Koupa') DEFAULT NULL
+  `sxima` enum('Karo','Trifylli','Bastouni','Koupa') DEFAULT NULL,
+  `player_cards_played` tinyint(1) DEFAULT NULL,
+  `dealer_cards_played` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Άδειασμα δεδομένων του πίνακα `cards`
 --
 
-INSERT INTO `cards` (`id`, `symbol`, `value`, `color`, `used`, `sxima`) VALUES
-(1, '2', 2, 'R', 0, 'Koupa'),
-(2, '3', 3, 'R', 0, 'Koupa'),
-(3, '4', 4, 'R', 0, 'Koupa'),
-(4, '5', 5, 'R', 0, 'Koupa'),
-(5, '6', 6, 'R', 0, 'Koupa'),
-(6, '7', 7, 'R', 0, 'Koupa'),
-(7, '8', 8, 'R', 0, 'Koupa'),
-(8, '9', 9, 'R', 0, 'Koupa'),
-(9, '10', 10, 'R', 0, 'Koupa'),
-(10, 'J', 10, 'R', 0, 'Koupa'),
-(11, 'Q', 10, 'R', 0, 'Koupa'),
-(12, 'K', 10, 'R', 0, 'Koupa'),
-(13, 'A', 1, 'R', 0, 'Koupa'),
-(14, '2', 2, 'B', 0, 'Bastouni'),
-(15, '3', 3, 'B', 0, 'Bastouni'),
-(16, '4', 4, 'B', 0, 'Bastouni'),
-(17, '5', 5, 'B', 0, 'Bastouni'),
-(18, '6', 6, 'B', 0, 'Bastouni'),
-(19, '7', 7, 'B', 0, 'Bastouni'),
-(20, '8', 8, 'B', 0, 'Bastouni'),
-(21, '9', 9, 'B', 0, 'Bastouni'),
-(22, '10', 10, 'B', 0, 'Bastouni'),
-(23, 'J', 10, 'B', 0, 'Bastouni'),
-(24, 'Q', 10, 'B', 0, 'Bastouni'),
-(25, 'K', 10, 'B', 0, 'Bastouni'),
-(26, 'A', 1, 'B', 0, 'Bastouni'),
-(28, '2', 2, 'B', 0, 'Trifylli'),
-(29, '3', 3, 'B', 0, 'Trifylli'),
-(30, '4', 4, 'B', 0, 'Trifylli'),
-(31, '5', 5, 'B', 0, 'Trifylli'),
-(32, '6', 6, 'B', 0, 'Trifylli'),
-(33, '7', 7, 'B', 0, 'Trifylli'),
-(34, '8', 8, 'B', 0, 'Trifylli'),
-(35, '9', 9, 'B', 0, 'Trifylli'),
-(36, '10', 10, 'B', 0, 'Trifylli'),
-(37, 'J', 10, 'B', 0, 'Trifylli'),
-(38, 'Q', 10, 'B', 0, 'Trifylli'),
-(39, 'K', 10, 'B', 0, 'Trifylli'),
-(40, 'A', 1, 'B', 0, 'Trifylli'),
-(41, '2', 2, 'R', 0, 'Karo'),
-(42, '3', 3, 'R', 0, 'Karo'),
-(43, '4', 4, 'R', 0, 'Karo'),
-(44, '5', 5, 'R', 0, 'Karo'),
-(45, '6', 6, 'R', 0, 'Karo'),
-(46, '7', 7, 'R', 0, 'Karo'),
-(47, '8', 8, 'R', 0, 'Karo'),
-(48, '9', 9, 'R', 0, 'Karo'),
-(49, '10', 10, 'R', 0, 'Karo'),
-(50, 'J', 10, 'R', 0, 'Karo'),
-(51, 'Q', 10, 'R', 0, 'Karo'),
-(52, 'K', 10, 'R', 0, 'Karo'),
-(53, 'A', 1, 'R', 0, 'Karo');
+INSERT INTO `cards` (`id`, `symbol`, `value`, `color`, `used`, `sxima`, `player_cards_played`, `dealer_cards_played`) VALUES
+(1, '2', 2, 'R', 0, 'Koupa', NULL, NULL),
+(2, '3', 3, 'R', 0, 'Koupa', NULL, NULL),
+(3, '4', 4, 'R', 0, 'Koupa', NULL, NULL),
+(4, '5', 5, 'R', 0, 'Koupa', NULL, NULL),
+(5, '6', 6, 'R', 0, 'Koupa', NULL, NULL),
+(6, '7', 7, 'R', 0, 'Koupa', NULL, NULL),
+(7, '8', 8, 'R', 0, 'Koupa', NULL, NULL),
+(8, '9', 9, 'R', 0, 'Koupa', NULL, NULL),
+(9, '10', 10, 'R', 0, 'Koupa', NULL, NULL),
+(10, 'J', 10, 'R', 0, 'Koupa', NULL, NULL),
+(11, 'Q', 10, 'R', 0, 'Koupa', NULL, NULL),
+(12, 'K', 10, 'R', 0, 'Koupa', NULL, NULL),
+(13, 'A', 1, 'R', 0, 'Koupa', NULL, NULL),
+(14, '2', 2, 'B', 0, 'Bastouni', NULL, NULL),
+(15, '3', 3, 'B', 0, 'Bastouni', NULL, NULL),
+(16, '4', 4, 'B', 0, 'Bastouni', NULL, NULL),
+(17, '5', 5, 'B', 0, 'Bastouni', NULL, NULL),
+(18, '6', 6, 'B', 0, 'Bastouni', NULL, NULL),
+(19, '7', 7, 'B', 0, 'Bastouni', NULL, NULL),
+(20, '8', 8, 'B', 0, 'Bastouni', NULL, NULL),
+(21, '9', 9, 'B', 0, 'Bastouni', NULL, NULL),
+(22, '10', 10, 'B', 0, 'Bastouni', NULL, NULL),
+(23, 'J', 10, 'B', 0, 'Bastouni', NULL, NULL),
+(24, 'Q', 10, 'B', 0, 'Bastouni', NULL, NULL),
+(25, 'K', 10, 'B', 0, 'Bastouni', NULL, NULL),
+(26, 'A', 1, 'B', 0, 'Bastouni', NULL, NULL),
+(28, '2', 2, 'B', 0, 'Trifylli', NULL, NULL),
+(29, '3', 3, 'B', 0, 'Trifylli', NULL, NULL),
+(30, '4', 4, 'B', 0, 'Trifylli', NULL, NULL),
+(31, '5', 5, 'B', 0, 'Trifylli', NULL, NULL),
+(32, '6', 6, 'B', 0, 'Trifylli', NULL, NULL),
+(33, '7', 7, 'B', 0, 'Trifylli', NULL, NULL),
+(34, '8', 8, 'B', 0, 'Trifylli', NULL, NULL),
+(35, '9', 9, 'B', 0, 'Trifylli', NULL, NULL),
+(36, '10', 10, 'B', 0, 'Trifylli', NULL, NULL),
+(37, 'J', 10, 'B', 0, 'Trifylli', NULL, NULL),
+(38, 'Q', 10, 'B', 0, 'Trifylli', NULL, NULL),
+(39, 'K', 10, 'B', 0, 'Trifylli', NULL, NULL),
+(40, 'A', 1, 'B', 0, 'Trifylli', NULL, NULL),
+(41, '2', 2, 'R', 0, 'Karo', NULL, NULL),
+(42, '3', 3, 'R', 0, 'Karo', NULL, NULL),
+(43, '4', 4, 'R', 0, 'Karo', NULL, NULL),
+(44, '5', 5, 'R', 0, 'Karo', NULL, NULL),
+(45, '6', 6, 'R', 0, 'Karo', NULL, NULL),
+(46, '7', 7, 'R', 0, 'Karo', NULL, NULL),
+(47, '8', 8, 'R', 0, 'Karo', NULL, NULL),
+(48, '9', 9, 'R', 0, 'Karo', NULL, NULL),
+(49, '10', 10, 'R', 0, 'Karo', NULL, NULL),
+(50, 'J', 10, 'R', 0, 'Karo', NULL, NULL),
+(51, 'Q', 10, 'R', 0, 'Karo', NULL, NULL),
+(52, 'K', 10, 'R', 0, 'Karo', NULL, NULL),
+(53, 'A', 1, 'R', 0, 'Karo', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -134,66 +136,68 @@ CREATE TABLE `cards_empty` (
   `value` int(11) NOT NULL,
   `color` enum('B','R') DEFAULT NULL,
   `used` tinyint(1) DEFAULT NULL,
-  `sxima` enum('Karo','Trifylli','Bastouni','Koupa') DEFAULT NULL
+  `sxima` enum('Karo','Trifylli','Bastouni','Koupa') DEFAULT NULL,
+  `player_cards_played` tinyint(1) DEFAULT NULL,
+  `dealer_cards_played` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Άδειασμα δεδομένων του πίνακα `cards_empty`
 --
 
-INSERT INTO `cards_empty` (`id`, `symbol`, `value`, `color`, `used`, `sxima`) VALUES
-(1, '2', 2, 'R', 0, 'Koupa'),
-(2, '3', 3, 'R', 0, 'Koupa'),
-(3, '4', 4, 'R', 0, 'Koupa'),
-(4, '5', 5, 'R', 0, 'Koupa'),
-(5, '6', 6, 'R', 0, 'Koupa'),
-(6, '7', 7, 'R', 0, 'Koupa'),
-(7, '8', 8, 'R', 0, 'Koupa'),
-(8, '9', 9, 'R', 0, 'Koupa'),
-(9, '10', 10, 'R', 0, 'Koupa'),
-(10, 'J', 10, 'R', 0, 'Koupa'),
-(11, 'Q', 10, 'R', 0, 'Koupa'),
-(12, 'K', 10, 'R', 0, 'Koupa'),
-(13, 'A', 1, 'R', 0, 'Koupa'),
-(14, '2', 2, 'B', 0, 'Bastouni'),
-(15, '3', 3, 'B', 0, 'Bastouni'),
-(16, '4', 4, 'B', 0, 'Bastouni'),
-(17, '5', 5, 'B', 0, 'Bastouni'),
-(18, '6', 6, 'B', 0, 'Bastouni'),
-(19, '7', 7, 'B', 0, 'Bastouni'),
-(20, '8', 8, 'B', 0, 'Bastouni'),
-(21, '9', 9, 'B', 0, 'Bastouni'),
-(22, '10', 10, 'B', 0, 'Bastouni'),
-(23, 'J', 10, 'B', 0, 'Bastouni'),
-(24, 'Q', 10, 'B', 0, 'Bastouni'),
-(25, 'K', 10, 'B', 0, 'Bastouni'),
-(26, 'A', 1, 'B', 0, 'Bastouni'),
-(28, '2', 2, 'B', 0, 'Trifylli'),
-(29, '3', 3, 'B', 0, 'Trifylli'),
-(30, '4', 4, 'B', 0, 'Trifylli'),
-(31, '5', 5, 'B', 0, 'Trifylli'),
-(32, '6', 6, 'B', 0, 'Trifylli'),
-(33, '7', 7, 'B', 0, 'Trifylli'),
-(34, '8', 8, 'B', 0, 'Trifylli'),
-(35, '9', 9, 'B', 0, 'Trifylli'),
-(36, '10', 10, 'B', 0, 'Trifylli'),
-(37, 'J', 10, 'B', 0, 'Trifylli'),
-(38, 'Q', 10, 'B', 0, 'Trifylli'),
-(39, 'K', 10, 'B', 0, 'Trifylli'),
-(40, 'A', 1, 'B', 0, 'Trifylli'),
-(41, '2', 2, 'R', 0, 'Karo'),
-(42, '3', 3, 'R', 0, 'Karo'),
-(43, '4', 4, 'R', 0, 'Karo'),
-(44, '5', 5, 'R', 0, 'Karo'),
-(45, '6', 6, 'R', 0, 'Karo'),
-(46, '7', 7, 'R', 0, 'Karo'),
-(47, '8', 8, 'R', 0, 'Karo'),
-(48, '9', 9, 'R', 0, 'Karo'),
-(49, '10', 10, 'R', 0, 'Karo'),
-(50, 'J', 10, 'R', 0, 'Karo'),
-(51, 'Q', 10, 'R', 0, 'Karo'),
-(52, 'K', 10, 'R', 0, 'Karo'),
-(53, 'A', 1, 'R', 0, 'Karo');
+INSERT INTO `cards_empty` (`id`, `symbol`, `value`, `color`, `used`, `sxima`, `player_cards_played`, `dealer_cards_played`) VALUES
+(1, '2', 2, 'R', 0, 'Koupa', NULL, NULL),
+(2, '3', 3, 'R', 0, 'Koupa', NULL, NULL),
+(3, '4', 4, 'R', 0, 'Koupa', NULL, NULL),
+(4, '5', 5, 'R', 0, 'Koupa', NULL, NULL),
+(5, '6', 6, 'R', 0, 'Koupa', NULL, NULL),
+(6, '7', 7, 'R', 0, 'Koupa', NULL, NULL),
+(7, '8', 8, 'R', 0, 'Koupa', NULL, NULL),
+(8, '9', 9, 'R', 0, 'Koupa', NULL, NULL),
+(9, '10', 10, 'R', 0, 'Koupa', NULL, NULL),
+(10, 'J', 10, 'R', 0, 'Koupa', NULL, NULL),
+(11, 'Q', 10, 'R', 0, 'Koupa', NULL, NULL),
+(12, 'K', 10, 'R', 0, 'Koupa', NULL, NULL),
+(13, 'A', 1, 'R', 0, 'Koupa', NULL, NULL),
+(14, '2', 2, 'B', 0, 'Bastouni', NULL, NULL),
+(15, '3', 3, 'B', 0, 'Bastouni', NULL, NULL),
+(16, '4', 4, 'B', 0, 'Bastouni', NULL, NULL),
+(17, '5', 5, 'B', 0, 'Bastouni', NULL, NULL),
+(18, '6', 6, 'B', 0, 'Bastouni', NULL, NULL),
+(19, '7', 7, 'B', 0, 'Bastouni', NULL, NULL),
+(20, '8', 8, 'B', 0, 'Bastouni', NULL, NULL),
+(21, '9', 9, 'B', 0, 'Bastouni', NULL, NULL),
+(22, '10', 10, 'B', 0, 'Bastouni', NULL, NULL),
+(23, 'J', 10, 'B', 0, 'Bastouni', NULL, NULL),
+(24, 'Q', 10, 'B', 0, 'Bastouni', NULL, NULL),
+(25, 'K', 10, 'B', 0, 'Bastouni', NULL, NULL),
+(26, 'A', 1, 'B', 0, 'Bastouni', NULL, NULL),
+(28, '2', 2, 'B', 0, 'Trifylli', NULL, NULL),
+(29, '3', 3, 'B', 0, 'Trifylli', NULL, NULL),
+(30, '4', 4, 'B', 0, 'Trifylli', NULL, NULL),
+(31, '5', 5, 'B', 0, 'Trifylli', NULL, NULL),
+(32, '6', 6, 'B', 0, 'Trifylli', NULL, NULL),
+(33, '7', 7, 'B', 0, 'Trifylli', NULL, NULL),
+(34, '8', 8, 'B', 0, 'Trifylli', NULL, NULL),
+(35, '9', 9, 'B', 0, 'Trifylli', NULL, NULL),
+(36, '10', 10, 'B', 0, 'Trifylli', NULL, NULL),
+(37, 'J', 10, 'B', 0, 'Trifylli', NULL, NULL),
+(38, 'Q', 10, 'B', 0, 'Trifylli', NULL, NULL),
+(39, 'K', 10, 'B', 0, 'Trifylli', NULL, NULL),
+(40, 'A', 1, 'B', 0, 'Trifylli', NULL, NULL),
+(41, '2', 2, 'R', 0, 'Karo', NULL, NULL),
+(42, '3', 3, 'R', 0, 'Karo', NULL, NULL),
+(43, '4', 4, 'R', 0, 'Karo', NULL, NULL),
+(44, '5', 5, 'R', 0, 'Karo', NULL, NULL),
+(45, '6', 6, 'R', 0, 'Karo', NULL, NULL),
+(46, '7', 7, 'R', 0, 'Karo', NULL, NULL),
+(47, '8', 8, 'R', 0, 'Karo', NULL, NULL),
+(48, '9', 9, 'R', 0, 'Karo', NULL, NULL),
+(49, '10', 10, 'R', 0, 'Karo', NULL, NULL),
+(50, 'J', 10, 'R', 0, 'Karo', NULL, NULL),
+(51, 'Q', 10, 'R', 0, 'Karo', NULL, NULL),
+(52, 'K', 10, 'R', 0, 'Karo', NULL, NULL),
+(53, 'A', 1, 'R', 0, 'Karo', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -213,7 +217,7 @@ CREATE TABLE `game_status` (
 --
 
 INSERT INTO `game_status` (`status`, `turn`, `result`, `last_change`) VALUES
-('NOT ACTIVE', NULL, 'PW', '2019-12-18 18:33:30');
+('ENDED', NULL, NULL, '2019-12-28 11:30:41');
 
 --
 -- Δείκτες `game_status`
@@ -242,8 +246,8 @@ CREATE TABLE `players` (
 --
 
 INSERT INTO `players` (`username`, `melos`, `points`, `token`, `last_action`) VALUES
-('', 'Player', 0, NULL, '2019-12-18 18:33:30'),
-('', 'Dealer', 0, NULL, '2019-12-18 18:33:30');
+('Stavros', 'Player', 0, '1a602bbf77395c0c99c499f05efeb4d3', '2019-12-28 10:31:30'),
+('Koulis', 'Dealer', 0, '702fbd8e6ea97ee4f62de17306e2b4d7', '2019-12-28 10:31:41');
 
 --
 -- Ευρετήρια για άχρηστους πίνακες
@@ -262,10 +266,26 @@ ALTER TABLE `cards_empty`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Ευρετήρια για πίνακα `game_status`
+--
+ALTER TABLE `game_status`
+  ADD KEY `turn` (`turn`);
+
+--
 -- Ευρετήρια για πίνακα `players`
 --
 ALTER TABLE `players`
   ADD PRIMARY KEY (`melos`);
+
+--
+-- Περιορισμοί για άχρηστους πίνακες
+--
+
+--
+-- Περιορισμοί για πίνακα `game_status`
+--
+ALTER TABLE `game_status`
+  ADD CONSTRAINT `game_status_ibfk_1` FOREIGN KEY (`turn`) REFERENCES `players` (`melos`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

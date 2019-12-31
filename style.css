@@ -100,10 +100,16 @@ div.status{
 	color: red;
 	width: 120px;
 	height: 50px;
-	border: 1px solid red;
 	border: 2px solid red;
 	border-radius: 12px;
 	padding: 10px;
-	
+}
+div.game_info{
+	color: red;
+	width: 350px;
+	height: 80px;
+	border: 2px solid red;
+	border-radius: 12px;
+	padding: 10px;
 }
 	 

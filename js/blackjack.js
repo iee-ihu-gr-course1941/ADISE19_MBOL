@@ -8,6 +8,11 @@ var timer_cards=null;
 var melos=null;
 var hit_p=6;
 var hit_d=5;
+var flag=true;
+
+var player_played_cards=new Array();
+var dealer_played_cards=new Array();
+
 
 var dealer_cards=new Array();
 var counter_d=0;
@@ -35,47 +40,56 @@ $(function () {
 	$('#bj_reset').click( reset_card);
 	$('#take_card').click(do_deal);
 	$('#hit').click(do_hit);
+	$('#stand').click(do_stand);
 
 });
-
-function draw_empty_card(data){
-	
-};
 
 function calculate_points(){
 	player_points=0;
 	dealer_points=0;
-	
+	var obj;
+	game_status_update();
 	if(game_status.status=='STARTED')
 	{
-		for(var i=0;i<=player_cards.length;i++)
-		{
-			console.log(player_cards[i]);
-			var ks=player_cards[i];
-			
-			player_points+=parseInt(ks[0].value);
-			$('#player-score-value').html(player_points);
+		if(game_status.turn=='Player'){
+			for(var i=0;i<player_cards.length;i++)
+			{
+				obj=player_cards[i];
+				
+				player_points+=parseInt(obj.value);
+				$('#player-score-value').html(player_points);
+			}
+			if(player_points<=21){
+				$.ajax({url: 'blackjack.php/players/'+game_status.turn+'/'+player_points , method: "POST" , headers: {"X-Token": me.token}, success: function(){console.log("Points registered");} } );	
+			}
+			else{ 
+				console.log(player_points);
+				console.log("Busted Player!");
+				do_stand();
+				}
 		}
-		
-		for(i=0;i<=dealer_cards.length;i++)
-		{
-			dealer_points+=dealer_cards[i].value;
-			$('#player-chips-value').html(dealer_points);
-		}
-		/*
-		if(player_points<=21){
-			//send api...
-		}
-		else
-			alert("Busted!");
+		else if (game_status.turn=='Dealer'){
+			for(i=0;i<dealer_cards.length;i++)
+			{
+				obj=dealer_cards[i];
+				dealer_points+=parseInt(obj.value);
+				$('#dealer-score-value').html(dealer_points);
+			}
+			if(dealer_points<=21){
+				$.ajax({url: 'blackjack.php/players/'+game_status.turn+'/'+player_points , method: "POST" , headers: {"X-Token": me.token}, success: function(){console.log("Points registered");} } );	
+			}
+		else {
+			console.log(player_points);
+			console.log("Busted Player!");
 			do_stand();
-		*/
-	}
-	else if (game_status.status=='NOT ACTIVE') 
-	return;
+			}
+		}	
+	else alert("Something"); 
+	
 	
 
 
+}
 }
 
 function fill_card_by_data(data) {
@@ -145,13 +159,18 @@ function game_status_update() {
 	} 
 	, headers: {"X-Token": me.token} });
 	
+	if (flag==false) {
+		flag=true;
+		refresh_dealer();
+	}
+	
+	
 	
 }
-/*
+
 function update_info(){
-	$('#game_info').html("I am Player: "+me.melos+", my name is "+me.username +'<br>Token='+me.token/*+'<br>Game state: '+game_status.status+', '+ game_status.melos+' must play now.');
+	$('#game_info').html("I am Player: "+me.melos+", my name is "+me.username +'<br>Token='+me.token);
 }
-*/
 
 function do_deal() {
 	var simbolo;
@@ -165,16 +184,20 @@ function do_deal() {
 				{
 					
 					player_cards[counter++]=obj;		
-					simbolo=obj[0].symbol;
-					schema=obj[0].sxima;
+					simbolo=obj.symbol;
+					schema=obj.sxima;
 					$('#card_shown_2').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 					counter_p=1;
+					
+					
 					
 				}
 				else if(game_status.turn=='Dealer')
 				{
 					dealer_cards[counter++]=obj;
-					$('#card_shown_1').html("<img id='cards' src='classic-cards/b2fv.png' width='71px' height='96px'/>");
+					simbolo=obj.symbol;
+					schema=obj.sxima;
+					$('#card_shown_1').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 					counter_d=1;
 				}
 					
@@ -192,8 +215,8 @@ function do_deal() {
 				{
 					
 					player_cards[counter++]=obj;	
-					simbolo=obj[0].symbol;
-					schema=obj[0].sxima;	
+					simbolo=obj.symbol;
+					schema=obj.sxima;	
 					$('#card_shown_4').html("<img id='cards_2' src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 					counter_p=2;
 					
@@ -201,8 +224,8 @@ function do_deal() {
 				else if(game_status.turn=='Dealer')
 				{
 					dealer_cards[counter++]=obj;
-					simbolo=obj[0].symbol;
-					schema=obj[0].sxima;
+					simbolo=obj.symbol;
+					schema=obj.sxima;
 					$('#card_shown_3').html("<img id='cards_2' src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 					counter_d=2;
 				}
@@ -230,16 +253,15 @@ function do_hit() {
 					{
 						if(hit_p==6){
 							player_cards[counter++]=obj;		
-							simbolo=obj[0].symbol;
-							schema=obj[0].sxima;
+							simbolo=obj.symbol;
+							schema=obj.sxima;
 							$('#card_shown_'+hit_p).html("<img src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 						}
 						else
 						{
 							player_cards[counter++]=obj;		
-							simbolo=obj[0].symbol;
-							schema=obj[0].sxima;
-							
+							simbolo=obj.symbol;
+							schema=obj.sxima;
 							$('#card_shown_'+hit_p).html("<img src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 						}
 						hit_p+=2;
@@ -255,16 +277,15 @@ function do_hit() {
 						if(hit_d==5)
 						{
 							dealer_cards[counter++]=obj;		
-							simbolo=obj[0].symbol;
-							schema=obj[0].sxima;
+							simbolo=obj.symbol;
+							schema=obj.sxima;
 							$('#card_shown_'+hit_d).html("<img src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 						}
 						else
 						{
 							dealer_cards[counter++]=obj;			
-							simbolo=obj[0].symbol;
-							schema=obj[0].sxima;
-							
+							simbolo=obj.symbol;
+							schema=obj.sxima;
 							$('#card_shown_'+hit_d).html("<img src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 						}
 						hit_d+=2;
@@ -282,8 +303,77 @@ function do_hit() {
 }
 
 function do_stand() {
+	var obj;
+	var simbolo;
+	var schema;
+	hit_p=2;
+	var sum=0;
+	game_status_update();
+	if(game_status.turn=='Player')
+	{
+		$.ajax({url: 'blackjack.php/deck/stand/' , method: "GET" , headers: {"X-Token": me.token} , success: function(){ console.log("Success is standing player "); } });	
+	}
+	else if(game_status.turn=='Dealer')
+	{
+		flag=false;
+		$.ajax({url: 'blackjack.php/deck/stand/' , method: "GET" , headers: {"X-Token": me.token} , success: function(){ console.log("Success is standing dealer "); } });
+		refresh_player();
+		
+	}
 	
+}
+
+function refresh_dealer() {
+	var obj;
+	var simbolo;
+	var schema;
+	hit_d=1;
+	var sum_dealer=0;
+
+	$.ajax({url: 'blackjack.php/deck/fetch/Dealer' , method: "GET" , headers: {"X-Token": me.token} , success: 
+		function(data)
+		{
+			obj=JSON.parse(data);
+			console.log(obj);
+			console.log(obj.length);
+			for(var i=0;i<obj.length;i++)
+			{
+				simbolo=obj[i].symbol;
+				schema=obj[i].sxima;
+				sum_dealer+=parseInt(obj[i].value);
+				$('#card_shown_'+hit_d).html("<img src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
+				hit_d+=2;
+			}
+			$('#dealer-score-value').html(sum_dealer);
+			
+		} });
 	
+}
+
+function refresh_player() {
+	var obj;
+	var simbolo;
+	var schema;
+	hit_p=2;
+	var sum_player=0;
+	
+	$.ajax({url: 'blackjack.php/deck/fetch/Player' , method: "GET" , headers: {"X-Token": me.token} , success: 
+		function(data)
+		{
+			obj=JSON.parse(data);
+			console.log(obj);
+			console.log(obj.length);
+			for(var i=0;i<obj.length;i++)
+			{
+				simbolo=obj[i].symbol;
+				schema=obj[i].sxima;
+				sum_player+=parseInt(obj[i].value);
+				$('#card_shown_'+hit_p).html("<img src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
+				hit_p+=2;
+			}
+			$('#player-score-value').html(sum_player);
+			
+		} });
 }
 
 function fill_card() {

@@ -8,8 +8,7 @@
 		$statement->execute();
 		$result=$statement->get_result();
 		$status=$result->fetch_assoc();
-		return $status;
-		
+		return $status;	
 	}
 
 	//DONE
@@ -18,15 +17,10 @@
 		global $mysqli;
 		$sqlcommand="SELECT status,turn,result,last_change FROM game_status";
 		$statement=$mysqli->prepare($sqlcommand);
-		$statement->execute();
-		
-		$result=$statement->get_result();
-		
+		$statement->execute();	
+		$result=$statement->get_result();	
 		header('Content-type: application/json');
-		print json_encode($result->fetch_all(MYSQLI_ASSOC), JSON_PRETTY_PRINT);
-		
-		
-		
+		print json_encode($result->fetch_all(MYSQLI_ASSOC), JSON_PRETTY_PRINT);		
 	}
 	//DONE
 	function update_game_status()
@@ -34,15 +28,12 @@
 		global $mysqli;
 		$new_status=NULL;
 		$new_turn=NULL;
-		
-		
 		/*PAIRNW TO TREXON STIGMIOTIPO TOU GAME_STATUS*/
 		$statuscommand="SELECT status,turn,result,last_change FROM game_status";
 		$statement=$mysqli->prepare($statuscommand);
 		$statement->execute();
 		$result=$statement->get_result();
-		$status=$result->fetch_assoc();
-		
+		$status=$result->fetch_assoc();	
 		/*ELEGXO GIA AUTOUS POU PREPEI NA FANE TIME OUT*/
 		$sqlcommand="SELECT COUNT(*) AS INACTIVE FROM players WHERE last_action<(NOW() - INTERVAL 1000 MINUTE)";//KICK INTERVAL EINAI 5 LEPTA 
 		$statement=$mysqli->prepare($sqlcommand);
@@ -66,11 +57,6 @@
 		$statement->execute();
 		$result=$statement->get_result();
 		$players=$result->fetch_assoc();
-		
-		
-		
-		
-		
 		if($players['C']==0)
 		{
 			$new_status='NOT ACTIVE';
@@ -88,7 +74,6 @@
 				$new_turn='Player';
 			}
 		}
-		
 		$updatecommand="UPDATE game_status SET status=?,turn= ? ";
 		$statement=$mysqli->prepare($updatecommand);
 		$statement->bind_param('ss',$new_status,$new_turn);
@@ -107,7 +92,6 @@
 			print json_encode(['errormesg'=>"token is not set."]);
 			exit;
 		}
-		
 		$melos=is_melos($token);
 		if($melos==NULL)
 		{
@@ -115,29 +99,12 @@
 			print json_encode(['errormesg'=>"Not a registered player,can't update points."]);
 			exit;
 		}
-		
 		$update="UPDATE players SET points= ? WHERE token = ?";
 		$statement=$mysqli->prepare($update);
 		$statement->bind_param('is',$points,$token);
 		$statement->execute();
 		header('HTTP/1.1 200 OK');
-	}
-	
-	function end_game()
-	{
-		global $mysqli;
-		$new_status='ENDED';
-		$new_turn=NULL;
-		$null=NULL;
-		
-		$updatecommand="UPDATE game_status SET status=?,turn= ? ,result = ?";
-		$statement=$mysqli->prepare($updatecommand);
-		$statement->bind_param('sss',$new_status,$new_turn,$null);
-		$statement->execute();
-		
-		
 	}	
-	
 	function fetch_played_cards($request)
 	{
 		global $mysqli;

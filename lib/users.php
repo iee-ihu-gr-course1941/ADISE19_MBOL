@@ -79,12 +79,8 @@
 			header("HTTP/1.1 400 Bad Request");
 			print json_encode(['errormesg'=>"Role '$name' already taken."]);
 			exit;
-		}
-		
-		
-		
-		update_game_status();
-		
+		}	
+		update_game_status();		
 		$sqlcommand="SELECT * FROM players WHERE username like ?";
 		$statement=$mysqli->prepare($sqlcommand);
 		$statement->bind_param('s',$melos);

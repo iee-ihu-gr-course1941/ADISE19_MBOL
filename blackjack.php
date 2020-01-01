@@ -1,25 +1,17 @@
 <?php 
-	/*
+	
 	error_reporting(E_ALL);
 	ini_set('display_errors', 1);
-	ini_set('display_errors','on' );*/
 	require_once "lib/deck.php";
 	require_once "lib/dbconnect.php";
 	require_once "lib/game.php";
-	require_once "lib/users.php";
-	
+	require_once "lib/users.php";	
 	$method=$_SERVER['REQUEST_METHOD'];
 	$request=explode('/',trim($_SERVER['PATH_INFO'],'/'));
 	$input = json_decode(file_get_contents('php://input'),true);
-	
 	if(isset($_SERVER['HTTP_X_TOKEN'])) {
 		$input['token']=$_SERVER['HTTP_X_TOKEN'];
 	}
-	
-	
-	
-	
-	//print_r($request);
 	switch ($uri=array_shift($request)) 
 	{
 		case "deck":
@@ -78,7 +70,6 @@
 				header("HTTP/1.1 404 Not Found");
                 exit;
 	}		
-	//DONE	
 	function manipulate_board($method)
 	{
 		if($method=="GET")
@@ -166,14 +157,9 @@
 			header("HTTP/1.1 400 Bad Request");
 			print json_encode(['errormesg'=>"It is not your turn to play!."]);
 			exit;	
-		}	
-		
-		
-		
-		$statement=$mysqli->query("CALL draw_card()");	
-		
-		$result=$statement->fetch_assoc();
-		
+		}		
+		$statement=$mysqli->query("CALL draw_card()");			
+		$result=$statement->fetch_assoc();	
 		mark_a_card($result['id']);
 		if($melos=='Player')
 		{
@@ -194,12 +180,7 @@
 			exit;
 		}
 		header("HTTP/1.1 200 OK");
-		print json_encode($result, JSON_PRETTY_PRINT);
-		
-		
-		
-		/*EMEINA EDW LEITOYRGOYN OLA*/
-		
+		print json_encode($result, JSON_PRETTY_PRINT);		
 	}
 	function free_all_results(mysqli $dbCon)
 	{
@@ -216,8 +197,7 @@
 	function mark_a_card($id)
 	{
 		global $mysqli;
-		free_all_results($mysqli);
-		
+		free_all_results($mysqli);	
 		$update="UPDATE cards SET used=1 WHERE id= ?";	
 		$statement=$mysqli->prepare($update);
         $statement->bind_param('i',$id);
@@ -252,13 +232,7 @@
 			header("HTTP/1.1 400 Bad Request");
 			print json_encode(['errormesg'=>"It is not your turn to play!."]);
 			exit;	
-		}	
-		
-		/*$statuscommand="SELECT turn FROM game_status";
-		$statement=$mysqli->prepare($statuscommand);
-		$statement->execute();
-		$result=$statement->get_result();*/
-		
+		}			
 		if($status['turn']=='Player')
 		{
 			$new_turn='Dealer';
@@ -270,16 +244,12 @@
 		else if($status['turn']=='Dealer')
 		{
 			check_winner();
-		}
-		
-		
-		
+		}		
 	}
 	
 	function check_winner()
 	{
-		global $mysqli;
-		
+		global $mysqli;	
 		$statement=$mysqli->prepare("SELECT * 
 									FROM players
 									WHERE points=(SELECT MAX(points) FROM players)");
@@ -290,35 +260,28 @@
 		
 		if($row_count==2)
 		{
-			$statement=$mysqli->query("UPDATE game_status SET result='DW'");
+			$statement=$mysqli->query("UPDATE game_status SET result='DW' , turn=NULL , status='ENDED'");
 		}
 		else if ($row_count==1)
 		{
 			
 			if($r['melos']=='Player')
 			{
-				$statement=$mysqli->query("UPDATE game_status SET result='PW' ");
+				$statement=$mysqli->query("UPDATE game_status SET result='PW' , turn=NULL , status='ENDED' ");
 			}	
 			else if($r['melos']=='Dealer')
 			{
-				$statement=$mysqli->query("UPDATE game_status SET result='DW' ");	
-			}				
-			
+				$statement=$mysqli->query("UPDATE game_status SET result='DW' , turn=NULL , status='ENDED'");	
+			}					
 		}
 		else
 		{
 			header("HTTP/1.1 400 Bad Request");
-		}
-		
+		}	
 		$selectcommand="SELECT * FROM game_status";
-		$statement=$mysqli->query($selectcommand);
-		
-		
+		$statement=$mysqli->query($selectcommand);		
 		header('Content-type: application/json');
-		print json_encode($result=$statement->fetch_all(MYSQLI_ASSOC), JSON_PRETTY_PRINT);
-		
-		end_game();
-		
+		print json_encode($result=$statement->fetch_all(MYSQLI_ASSOC), JSON_PRETTY_PRINT);	
 	}
 	
 ?>

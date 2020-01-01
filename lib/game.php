@@ -130,10 +130,6 @@
 		$new_turn=NULL;
 		$null=NULL;
 		
-		$select="SELECT result FROM game_status";
-		$statement=$mysqli->query($select);
-		print json_encode($result=$statement->fetch_all(MYSQLI_ASSOC) , JSON_PRETTY_PRINT);
-		
 		$updatecommand="UPDATE game_status SET status=?,turn= ? ,result = ?";
 		$statement=$mysqli->prepare($updatecommand);
 		$statement->bind_param('sss',$new_status,$new_turn,$null);

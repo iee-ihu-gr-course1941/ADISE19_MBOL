@@ -9,7 +9,6 @@
 	require_once "lib/users.php";
 	
 	$method=$_SERVER['REQUEST_METHOD'];
-	
 	$request=explode('/',trim($_SERVER['PATH_INFO'],'/'));
 	$input = json_decode(file_get_contents('php://input'),true);
 	
@@ -273,12 +272,6 @@
 			check_winner();
 		}
 		
-		$selectcommand="SELECT * FROM game_status";
-		$statement=$mysqli->query($selectcommand);
-		
-		
-		header('Content-type: application/json');
-		print json_encode($result=$statement->fetch_all(MYSQLI_ASSOC), JSON_PRETTY_PRINT);
 		
 		
 	}
@@ -298,22 +291,33 @@
 		if($row_count==2)
 		{
 			$statement=$mysqli->query("UPDATE game_status SET result='DW'");
-			end_game();
 		}
 		else if ($row_count==1)
 		{
 			
 			if($r['melos']=='Player')
+			{
 				$statement=$mysqli->query("UPDATE game_status SET result='PW' ");
+			}	
 			else if($r['melos']=='Dealer')
-				$statement=$mysqli->query("UPDATE game_status SET result='DW' ");
-			end_game();
+			{
+				$statement=$mysqli->query("UPDATE game_status SET result='DW' ");	
+			}				
+			
 		}
 		else
 		{
 			header("HTTP/1.1 400 Bad Request");
 		}
 		
+		$selectcommand="SELECT * FROM game_status";
+		$statement=$mysqli->query($selectcommand);
+		
+		
+		header('Content-type: application/json');
+		print json_encode($result=$statement->fetch_all(MYSQLI_ASSOC), JSON_PRETTY_PRINT);
+		
+		end_game();
 		
 	}
 	

@@ -1,7 +1,5 @@
 var me={token:null,melos:null};
 var game_status={};
-var card={};
-var game_stat_old={};
 var last_update=new Date().getTime();
 var timer=null;
 var timer_cards=null;
@@ -9,11 +7,8 @@ var melos=null;
 var hit_p=6;
 var hit_d=5;
 var flag=true;
-
 var player_played_cards=new Array();
 var dealer_played_cards=new Array();
-
-
 var dealer_cards=new Array();
 var counter_d=0;
 var player_cards=new Array();
@@ -31,6 +26,8 @@ $(function () {
 	fill_card_blank();
 	$('#player-score-value').show(500);
 	$('#player-chips-value').show(500);
+	$('#game_info').hide();
+	$('#display_winner').hide();
 	
 	$('#take_card').prop('disabled', true);
 	$('#hit').prop('disabled', true);
@@ -59,14 +56,7 @@ function calculate_points(){
 				player_points+=parseInt(obj.value);
 				$('#player-score-value').html(player_points);
 			}
-			if(player_points<=21){
-				$.ajax({url: 'blackjack.php/players/'+game_status.turn+'/'+player_points , method: "POST" , headers: {"X-Token": me.token}, success: function(){console.log("Points registered");} } );	
-			}
-			else{ 
-				console.log(player_points);
-				console.log("Busted Player!");
-				do_stand();
-				}
+			register_points();
 		}
 		else if (game_status.turn=='Dealer'){
 			for(i=0;i<dealer_cards.length;i++)
@@ -75,28 +65,46 @@ function calculate_points(){
 				dealer_points+=parseInt(obj.value);
 				$('#dealer-score-value').html(dealer_points);
 			}
-			if(dealer_points<=21){
-				$.ajax({url: 'blackjack.php/players/'+game_status.turn+'/'+player_points , method: "POST" , headers: {"X-Token": me.token}, success: function(){console.log("Points registered");} } );	
-			}
-		else {
-			console.log(player_points);
-			console.log("Busted Player!");
-			do_stand();
-			}
+			register_points();
 		}	
 	else alert("Something"); 
+
+}
+}
+
+function register_points()
+{
+	if(game_status.turn=='Player')
+	{
+			if(player_points<=21)
+			{
+					console.log("Token"+me.token);
+						$.ajax({url: 'blackjack.php/players/Player/'+player_points+'/', headers: {"X-Token": me.token} , method: "POST"  , success: function(){ console.log("Success in registering Points of Player "); } });	
+					}
+			else
+			{ 
+						console.log(player_points);
+						console.log("Busted Player!");
+						do_stand();
+			}
+	}
 	
+	else if(game_status.turn=='Dealer')
+	{
+		if(dealer_points<=21)
+		{
+				console.log("Token"+me.token);
+					$.ajax({url: 'blackjack.php/players/Dealer/'+dealer_points+'/', headers: {"X-Token": me.token} , method: "POST"  , success: function(){ console.log("Success in registering Points of Dealer "); } });	
+		}
+		else 
+		{
+					console.log(player_points);
+					console.log("Busted Dealer!");
+					do_stand();
+		}			
+	}
 	
-
-
 }
-}
-
-function fill_card_by_data(data) {
-	var card = data[0];
-	var melos=$('#ch_seat').val();
-}
-
 function login_to_game() {
 	if($('#username').val()=='' ||  $('#username').val()== null ) {
 		alert('You have to set a username');
@@ -134,7 +142,6 @@ function game_status_update() {
 	$.ajax({url: "blackjack.php/status/", success: function(data)
 	{
 		last_update=new Date().getTime();
-		game_stat_old = game_status;
 		game_status=data[0];
 		
 		
@@ -143,26 +150,37 @@ function game_status_update() {
 			$('#status').html("<p>"+game_status.status+ "</p>");	
 		}
 		else if(game_status.status=='INITIALIZED')
-		{		
-			$('#status').html("<p>"+game_status.status+ "</p>");	
+		{	
+			$('#game_info').show(1000);
+			$('#status').html("<p>"+game_status.status+ "</p>");
 		}
-		else if (game_status.status=="STARTED" )  {
-			$('#take_card').prop('disabled', false);
-			$('#hit').prop('disabled', false);
-			$('#stand').prop('disabled', false);
-			$('#status').html("<p>"+game_status.status+ "</p>");	
+		else if (game_status.status=="STARTED") {
+				$('#take_card').prop('disabled', false);
+				$('#hit').prop('disabled', false);
+				$('#stand').prop('disabled', false);
+				$('#status').html("<p>"+game_status.status+ "</p>");
+		}
+		else if(game_status.status=="ENDED" && flag==true)
+		{
+			flag=false;
+			refresh_dealer();
+			$('#display_winner').show(1000);
+			$('#hit').prop('disabled', true);
+			$('#stand').prop('disabled', true);
+			if(game_status.result=="DW"){
+				$('#display_winner').html("Dealer WINS!");
+			}
+			else if (game_status.result=="PW"){
+				$('#display_winner').html("Player WINS!");
+			}
 			
 		}
 		else {
-		return;
+			return;
 		}
 	} 
 	, headers: {"X-Token": me.token} });
 	
-	if (flag==false) {
-		flag=true;
-		refresh_dealer();
-	}
 	
 	
 	
@@ -303,19 +321,17 @@ function do_hit() {
 }
 
 function do_stand() {
-	var obj;
-	var simbolo;
-	var schema;
-	hit_p=2;
-	var sum=0;
 	game_status_update();
 	if(game_status.turn=='Player')
 	{
+		$('#hit').hide(1000);
+		$('#stand').hide(1000);	
 		$.ajax({url: 'blackjack.php/deck/stand/' , method: "GET" , headers: {"X-Token": me.token} , success: function(){ console.log("Success is standing player "); } });	
 	}
 	else if(game_status.turn=='Dealer')
 	{
-		flag=false;
+		$('#hit').hide(1000);
+		$('#stand').hide(1000);
 		$.ajax({url: 'blackjack.php/deck/stand/' , method: "GET" , headers: {"X-Token": me.token} , success: function(){ console.log("Success is standing dealer "); } });
 		refresh_player();
 		
@@ -376,13 +392,6 @@ function refresh_player() {
 		} });
 }
 
-function fill_card() {
-	$.ajax({url: "blackjack.php/deck/hit/", 
-		headers: {"X-Token": me.token,
-		method: "GET" },
-		success: fill_card_by_data });
-}
-
 function fill_card_blank() {
 	$('#card_shown_1').html("<img src='classic-cards/b2fv.png' width='71px' height='96px'/>");
 	$('#card_shown_2').html("<img src='classic-cards/b2fv.png' width='71px' height='96px'/>");
@@ -395,32 +404,10 @@ function fill_card_blank_reset() {
 }
 
 function reset_card() {
-	$.ajax({url: "blackjack.php/deck/", headers: {"X-Token": me.token}, method: 'POST',  success: fill_card_by_data });
+	$.ajax({url: "blackjack.php/deck/", headers: {"X-Token": me.token}, method: 'POST', success: function(){return;}});
 	$('#game_initializer').show(1000);
 	fill_card_blank_reset();
 	
 }
 
-/*
-function update_status(data) {
-	last_update=new Date().getTime();
-	var game_stat_old = game_status;
-	game_status=data[0];
-	update_info();
-	clearTimeout(timer);
-	if(game_status.melos==me.melos &&  me.melos!=null) {
-		x=0;
-		// do play
-		if(game_stat_old.melos!=game_status.melos) {
-			fill_card();
-		}
-		$('#move_div').show(1000);
-		timer=setTimeout(function() { game_status_update();}, 15000);
-	} else {
-		// must wait for something
-		$('#move_div').hide(1000);
-		timer=setTimeout(function() { game_status_update();}, 4000);
-	}
-}
-*/
 });

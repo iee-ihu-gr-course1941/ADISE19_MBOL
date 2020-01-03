@@ -112,4 +112,12 @@ div.game_info{
 	border-radius: 12px;
 	padding: 10px;
 }
+#display_winner {
+	position: relative;
+	left: 750px;
+	top: 240px;
+	color: red;
+	font-size:36px;
+	text-shadow:1px;
+}
 	 

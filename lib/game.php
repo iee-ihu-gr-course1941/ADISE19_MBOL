@@ -99,6 +99,18 @@
 			print json_encode(['errormesg'=>"Not a registered player,can't update points."]);
 			exit;
 		}
+		$status=return_current_status();
+		if($status['status']!='STARTED')
+		{
+			header("HTTP/1.1 400 Bad Request");
+			print json_encode(['errormesg'=>"Game hasn't started yet. Can't update Points."]);
+			exit;
+		}
+		if($status['turn'] != $melos){
+			header("HTTP/1.1 400 Bad Request");
+			print json_encode(['errormesg'=>"It is not your turn to play/update points!."]);
+			exit;	
+		}		
 		$update="UPDATE players SET points= ? WHERE token = ?";
 		$statement=$mysqli->prepare($update);
 		$statement->bind_param('is',$points,$token);

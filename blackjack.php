@@ -260,7 +260,7 @@
 		
 		if($row_count==2)
 		{
-			$statement=$mysqli->query("UPDATE game_status SET result='DW' , turn=NULL , status='ENDED'");
+			$statement=$mysqli->query("UPDATE game_status SET result='DRAW' , turn=NULL , status='ENDED'");
 		}
 		else if ($row_count==1)
 		{

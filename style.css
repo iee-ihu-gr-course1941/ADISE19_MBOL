@@ -106,15 +106,28 @@ div.status{
 }
 div.game_info{
 	color: red;
-	width: 350px;
+	width: 360px;
 	height: 80px;
 	border: 2px solid red;
 	border-radius: 12px;
 	padding: 10px;
 }
+div.turn{
+	color: red;
+	width: 350px;
+	height: 50px;
+	border: 2px solid red;
+	border-radius: 12px;
+	padding: 10px;
+}
+div.ace{
+	width: 100px;
+	height: 100px;
+
+}
 #display_winner {
 	position: relative;
-	left: 750px;
+	left: 650px;
 	top: 240px;
 	color: red;
 	font-size:36px;

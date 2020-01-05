@@ -16,6 +16,7 @@ var counter_p=0;
 var counter=0;
 var player_points=0;
 var dealer_points=0;
+var ace_point=0;
 
 
 
@@ -28,6 +29,8 @@ $(function () {
 	$('#player-chips-value').show(500);
 	$('#game_info').hide();
 	$('#display_winner').hide();
+	$('#turn').hide();
+	$('#ace').hide();
 	
 	$('#take_card').prop('disabled', true);
 	$('#hit').prop('disabled', true);
@@ -38,10 +41,12 @@ $(function () {
 	$('#take_card').click(do_deal);
 	$('#hit').click(do_hit);
 	$('#stand').click(do_stand);
+	$('#ace_one').click(ace_one);
+	$('#ace_eleven').click(ace_eleven);
 
 });
 
-function calculate_points(){
+function calculate_points() {
 	player_points=0;
 	dealer_points=0;
 	var obj;
@@ -52,9 +57,20 @@ function calculate_points(){
 			for(var i=0;i<player_cards.length;i++)
 			{
 				obj=player_cards[i];
-				
-				player_points+=parseInt(obj.value);
-				$('#player-score-value').html(player_points);
+				if(obj.symbol!="A"){
+					player_points+=parseInt(obj.value);
+					$('#player-score-value').html(player_points);
+				} 
+				else {
+					if(ace_point=1){
+						player_points+=1;
+						$('#player-score-value').html(player_points);
+					}
+					else if(ace_point=11) {
+						player_points+=11;
+						$('#player-score-value').html(player_points);
+					}
+				}
 			}
 			register_points();
 		}
@@ -62,30 +78,38 @@ function calculate_points(){
 			for(i=0;i<dealer_cards.length;i++)
 			{
 				obj=dealer_cards[i];
-				dealer_points+=parseInt(obj.value);
-				$('#dealer-score-value').html(dealer_points);
+				if(obj.symbol!="A"){
+					dealer_points+=parseInt(obj.value);
+					$('#dealer-score-value').html(dealer_points);
+				}
+				else {
+					if(ace_point=1){
+						dealer_points+=1;
+						$('#dealer-score-value').html(dealer_points);
+					}
+					else if(ace_point=11) {
+						dealer_points+=11;
+						$('#dealer-score-value').html(dealer_points);
+					}
+				}
 			}
 			register_points();
 		}	
 	else alert("Something"); 
-
+	}
 }
-}
 
-function register_points()
-{
+function register_points() {
 	if(game_status.turn=='Player')
 	{
 			if(player_points<=21)
 			{
-					console.log("Token"+me.token);
-						$.ajax({url: 'blackjack.php/players/Player/'+player_points+'/', headers: {"X-Token": me.token} , method: "POST"  , success: function(){ console.log("Success in registering Points of Player "); } });	
-					}
+				$.ajax({url: 'blackjack.php/players/Player/'+player_points+'/', headers: {"X-Token": me.token} , method: "POST"  , success: function(){ console.log("Success in registering Points of Player "); } });	
+			}
 			else
 			{ 
-						console.log(player_points);
-						console.log("Busted Player!");
-						do_stand();
+				$.ajax({url: 'blackjack.php/players/Player/0/', headers: {"X-Token": me.token} , method: "POST"  , success: function(){ console.log("Success in registering Points of Player "); } });	
+				do_stand();
 			}
 	}
 	
@@ -93,18 +117,16 @@ function register_points()
 	{
 		if(dealer_points<=21)
 		{
-				console.log("Token"+me.token);
-					$.ajax({url: 'blackjack.php/players/Dealer/'+dealer_points+'/', headers: {"X-Token": me.token} , method: "POST"  , success: function(){ console.log("Success in registering Points of Dealer "); } });	
+			$.ajax({url: 'blackjack.php/players/Dealer/'+dealer_points+'/', headers: {"X-Token": me.token} , method: "POST"  , success: function(){ console.log("Success in registering Points of Dealer "); } });	
 		}
 		else 
 		{
-					console.log(player_points);
-					console.log("Busted Dealer!");
-					do_stand();
+			$.ajax({url: 'blackjack.php/players/Dealer/0/', headers: {"X-Token": me.token} , method: "POST"  , success: function(){ console.log("Success in registering Points of Player "); } });	
+			do_stand();
 		}			
-	}
-	
+	}	
 }
+
 function login_to_game() {
 	if($('#username').val()=='' ||  $('#username').val()== null ) {
 		alert('You have to set a username');
@@ -143,22 +165,41 @@ function game_status_update() {
 	{
 		last_update=new Date().getTime();
 		game_status=data[0];
-		
-		
+		var obj_player;
+		var obj_dealer;
+		var obj;
 		if(game_status.status=='NOT ACTIVE')
 		{
-			$('#status').html("<p>"+game_status.status+ "</p>");	
+			$('#status').html("<p><b>"+game_status.status+ "</b></p>");	
 		}
 		else if(game_status.status=='INITIALIZED')
 		{	
 			$('#game_info').show(1000);
-			$('#status').html("<p>"+game_status.status+ "</p>");
+			$('#status').html("<p><b>"+game_status.status+ "</b></p>");
+			$.ajax({url: 'blackjack.php/players/' , method:"GET", headers: {"X-token":me.token} , success:function(data)
+			{
+				obj=JSON.parse(data);
+				obj_player=obj[0];
+				obj_dealer=obj[1];
+				$('#turn').show(1000);
+				if(obj_player.username=="")
+				{	
+					$('#turn').html("Waiting for a <b>Player</b> ");
+				}
+				else if(obj_dealer.username=="")
+				{
+					$('#turn').html("Waiting for a <b>Dealer</b> ");
+				}
+			}});
 		}
 		else if (game_status.status=="STARTED") {
 				$('#take_card').prop('disabled', false);
-				$('#hit').prop('disabled', false);
-				$('#stand').prop('disabled', false);
-				$('#status').html("<p>"+game_status.status+ "</p>");
+				$('#status').html("<p><b>"+game_status.status+ "</b></p>");
+				if(game_status.turn!= null)
+				{
+					$('#turn').show(1000);
+					$('#turn').html("It's <b>"+game_status.turn+"'s </b> turn");
+				}
 		}
 		else if(game_status.status=="ENDED" && flag==true)
 		{
@@ -167,13 +208,23 @@ function game_status_update() {
 			$('#display_winner').show(1000);
 			$('#hit').prop('disabled', true);
 			$('#stand').prop('disabled', true);
-			if(game_status.result=="DW"){
-				$('#display_winner').html("Dealer WINS!");
+			if(game_status.result=="DRAW"){
+				$('#display_winner').html("IT'S A DRAW!");
+			}
+			else if (game_status.result=="DW"){
+				$.ajax({url :'blackjack.php/players/Dealer', method:"GET", headers:{"X-token":me.token},success: function(data)
+				{
+					$('#display_winner').html("The Dealer : "+data[0].username+" WINS !");
+				}  });
+				
 			}
 			else if (game_status.result=="PW"){
-				$('#display_winner').html("Player WINS!");
-			}
-			
+				$.ajax({url :'blackjack.php/players/Player', method:"GET", headers:{"X-token":me.token},success: function(data)
+				{
+					$('#display_winner').html("The Player: "+data[0].username+" WINS !");
+				}  });
+			}	
+			$('#turn').hide();
 		}
 		else {
 			return;
@@ -187,7 +238,7 @@ function game_status_update() {
 }
 
 function update_info(){
-	$('#game_info').html("I am Player: "+me.melos+", my name is "+me.username +'<br>Token='+me.token);
+	$('#game_info').html("I am Player: <b>"+me.melos+"</b>, my name is <b>"+me.username +'</b><br>Token='+me.token);
 }
 
 function do_deal() {
@@ -199,16 +250,16 @@ function do_deal() {
 			{
 				obj=JSON.parse(data);
 				if(game_status.turn=='Player')
-				{
-					
+				{				
 					player_cards[counter++]=obj;		
 					simbolo=obj.symbol;
 					schema=obj.sxima;
 					$('#card_shown_2').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 					counter_p=1;
-					
-					
-					
+					if(simbolo=="A"){
+						$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
+						$('#ace').show(1000);
+					}
 				}
 				else if(game_status.turn=='Dealer')
 				{
@@ -217,27 +268,28 @@ function do_deal() {
 					schema=obj.sxima;
 					$('#card_shown_1').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 					counter_d=1;
-				}
-					
-				
-				
-			} 
-			
+					if(simbolo=="A"){
+						$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
+						$('#ace').show(1000);
+					}
+				}	
+			} 			
 		});
-		
 		$.ajax({url: 'blackjack.php/deck/hit' , headers: {"X-Token": me.token}, method: "GET" , success: 
 			function(data)
 			{
 				obj=JSON.parse(data);
 				if(game_status.turn=='Player')
 				{
-					
 					player_cards[counter++]=obj;	
 					simbolo=obj.symbol;
 					schema=obj.sxima;	
 					$('#card_shown_4').html("<img id='cards_2' src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 					counter_p=2;
-					
+					if(simbolo=="A"){
+						$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
+						$('#ace').show(1000);
+					}					
 				}
 				else if(game_status.turn=='Dealer')
 				{
@@ -246,15 +298,16 @@ function do_deal() {
 					schema=obj.sxima;
 					$('#card_shown_3').html("<img id='cards_2' src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 					counter_d=2;
+					if(simbolo=="A"){
+						$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
+						$('#ace').show(1000);
+					}
 				}
 			$('#take_card').hide(1000);
-				
-				
-			} 
-			
+			} 	
 		});
-	
-	
+		$('#hit').prop('disabled', false);
+		$('#stand').prop('disabled', false);
 	}
 	
 function do_hit() {
@@ -274,6 +327,10 @@ function do_hit() {
 							simbolo=obj.symbol;
 							schema=obj.sxima;
 							$('#card_shown_'+hit_p).html("<img src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
+							if(simbolo=="A"){
+								$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
+								$('#ace').show(1000);
+							}
 						}
 						else
 						{
@@ -281,6 +338,10 @@ function do_hit() {
 							simbolo=obj.symbol;
 							schema=obj.sxima;
 							$('#card_shown_'+hit_p).html("<img src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
+							if(simbolo=="A"){
+								$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
+								$('#ace').show(1000);
+							}
 						}
 						hit_p+=2;
 						counter_p++;
@@ -298,6 +359,10 @@ function do_hit() {
 							simbolo=obj.symbol;
 							schema=obj.sxima;
 							$('#card_shown_'+hit_d).html("<img src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
+							if(simbolo=="A"){
+								$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
+								$('#ace').show(1000);
+							}
 						}
 						else
 						{
@@ -305,19 +370,18 @@ function do_hit() {
 							simbolo=obj.symbol;
 							schema=obj.sxima;
 							$('#card_shown_'+hit_d).html("<img src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
+							if(simbolo=="A"){
+								$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
+								$('#ace').show(1000);
+							}
 						}
 						hit_d+=2;
 						counter_d++;
 					}
 					else alert("You can't hit more than 5 cards!");
 				}
-					
-				
-				
-			} 
-			
+			} 	
 		});
-	
 }
 
 function do_stand() {
@@ -350,8 +414,6 @@ function refresh_dealer() {
 		function(data)
 		{
 			obj=JSON.parse(data);
-			console.log(obj);
-			console.log(obj.length);
 			for(var i=0;i<obj.length;i++)
 			{
 				simbolo=obj[i].symbol;
@@ -377,8 +439,6 @@ function refresh_player() {
 		function(data)
 		{
 			obj=JSON.parse(data);
-			console.log(obj);
-			console.log(obj.length);
 			for(var i=0;i<obj.length;i++)
 			{
 				simbolo=obj[i].symbol;
@@ -410,4 +470,25 @@ function reset_card() {
 	
 }
 
+function ace_one(){
+	ace_point=1;
+	if(game_status.turn=='Player'){
+		player_points+=1;
+	}
+	else if (game_status.turn=='Dealer'){
+		dealer_points+=1;
+	}
+	$('#ace').hide(1000);
+}
+
+function ace_eleven(){
+	ace_point=11;
+	if(game_status.turn=='Player'){
+		player_points+=11;
+	}
+	else if (game_status.turn=='Dealer'){
+		dealer_points+=11;
+	}
+	$('#ace').hide(1000);
+}
 });

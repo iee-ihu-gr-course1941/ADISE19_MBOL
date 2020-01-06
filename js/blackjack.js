@@ -57,47 +57,47 @@ function calculate_points() {
 			for(var i=0;i<player_cards.length;i++)
 			{
 				obj=player_cards[i];
-				if(obj.symbol!="A"){
-					player_points+=parseInt(obj.value);
-					$('#player-score-value').html(player_points);
+				if(obj.symbol!="A")
+				{
+					player_points+=parseInt(obj.value);			
 				} 
-				else {
-					if(ace_point=1){
-						player_points+=1;
-						$('#player-score-value').html(player_points);
-					}
-					else if(ace_point=11) {
-						player_points+=11;
-						$('#player-score-value').html(player_points);
-					}
+				else 
+				{
+					if(ace_point==1)
+						player_points+=parseInt($('#ace_one').html());
+					else if(ace_point==11)
+						player_points+=parseInt($('#ace_eleven').html());
 				}
+				$('#player-score-value').html(player_points);
 			}
-			register_points();
 		}
-		else if (game_status.turn=='Dealer'){
+		else if (game_status.turn=='Dealer')
+		{
 			for(i=0;i<dealer_cards.length;i++)
 			{
 				obj=dealer_cards[i];
-				if(obj.symbol!="A"){
+				if(obj.symbol!="A")
+				{
 					dealer_points+=parseInt(obj.value);
-					$('#dealer-score-value').html(dealer_points);
+					
 				}
-				else {
-					if(ace_point=1){
-						dealer_points+=1;
-						$('#dealer-score-value').html(dealer_points);
-					}
-					else if(ace_point=11) {
-						dealer_points+=11;
-						$('#dealer-score-value').html(dealer_points);
-					}
+				else 
+				{
+					if(ace_point==1)
+						dealer_points+=parseInt($('#ace_one').html());
+					else if(ace_point==11)
+						dealer_points+=parseInt($('#ace_eleven').html());
 				}
+			$('#dealer-score-value').html(dealer_points);	
 			}
-			register_points();
-		}	
-	else alert("Something"); 
-	}
+			
+		}
+		register_points();
+	}	 
 }
+
+
+
 
 function register_points() {
 	if(game_status.turn=='Player')
@@ -472,23 +472,11 @@ function reset_card() {
 
 function ace_one(){
 	ace_point=1;
-	if(game_status.turn=='Player'){
-		player_points+=1;
-	}
-	else if (game_status.turn=='Dealer'){
-		dealer_points+=1;
-	}
 	$('#ace').hide(1000);
 }
 
 function ace_eleven(){
 	ace_point=11;
-	if(game_status.turn=='Player'){
-		player_points+=11;
-	}
-	else if (game_status.turn=='Dealer'){
-		dealer_points+=11;
-	}
 	$('#ace').hide(1000);
 }
 });

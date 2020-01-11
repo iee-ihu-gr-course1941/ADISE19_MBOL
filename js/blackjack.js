@@ -241,6 +241,7 @@ function game_status_update() {
 			}	
 			$('#turn').hide();
 			$('#status').html("<p><b>"+game_status.status+ "</b></p>");
+			$('#game_info').html("<b>The game has ended.</b></br><p>Please <b>reset</b> to play again</p>");
 			clearInterval(timer);
 			clearInterval(timer_cards);			
 		}

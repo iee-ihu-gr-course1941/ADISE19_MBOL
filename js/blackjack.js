@@ -19,7 +19,6 @@ var dealer_points=0;
 var ace_point=0;
 
 
-
 $(document).ready(function(){
 $(function () {
 	timer=setInterval(function(){ game_status_update(); },1000);
@@ -102,28 +101,44 @@ function calculate_points() {
 function register_points() {
 	if(game_status.turn=='Player')
 	{
+			/*
 			if(player_points<=21)
 			{
 				$.ajax({url: 'blackjack.php/players/Player/'+player_points+'/', headers: {"X-Token": me.token} , method: "POST"  , success: function(){ console.log("Success in registering Points of Player "); } });	
 			}
 			else
 			{ 
-				$.ajax({url: 'blackjack.php/players/Player/0/', headers: {"X-Token": me.token} , method: "POST"  , success: function(){ console.log("Success in registering Points of Player "); } });	
+				$.ajax({url: 'blackjack.php/players/Player/0/', headers: {"X-Token": me.token} , method: "POST"  , success: function(){ console.log("Success in registering BUSTED player! "); } });	
 				do_stand();
 			}
+			*/
+			if(player_points>21)
+			{
+				$('#hit').hide(1000);
+				$('#stand').html("<b>Fold</b>");
+			}
+			$.ajax({url: 'blackjack.php/players/Player/'+player_points+'/', headers: {"X-Token": me.token} , method: "POST"  , success: function(){ console.log("Success in registering Points of Player "); } });	
 	}
 	
 	else if(game_status.turn=='Dealer')
 	{
+		/*
 		if(dealer_points<=21)
 		{
 			$.ajax({url: 'blackjack.php/players/Dealer/'+dealer_points+'/', headers: {"X-Token": me.token} , method: "POST"  , success: function(){ console.log("Success in registering Points of Dealer "); } });	
 		}
 		else 
 		{
-			$.ajax({url: 'blackjack.php/players/Dealer/0/', headers: {"X-Token": me.token} , method: "POST"  , success: function(){ console.log("Success in registering Points of Player "); } });	
+			$.ajax({url: 'blackjack.php/players/Dealer/0/', headers: {"X-Token": me.token} , method: "POST"  , success: function(){ console.log("Success in registering BUSTED dealer "); } });	
 			do_stand();
-		}			
+		}
+		*/
+		if(dealer_points>21)
+		{
+				$('#hit').hide(1000);
+				$('#stand').html("<b>Fold</b>");
+		}
+		$.ajax({url: 'blackjack.php/players/Dealer/'+dealer_points+'/', headers: {"X-Token": me.token} , method: "POST"  , success: function(){ console.log("Success in registering Points of Dealer "); } });	
 	}	
 }
 
@@ -225,6 +240,18 @@ function game_status_update() {
 				}  });
 			}	
 			$('#turn').hide();
+			$('#status').html("<p><b>"+game_status.status+ "</b></p>");
+			clearInterval(timer);
+			clearInterval(timer_cards);			
+		}
+		else if(game_status.status=="ABORTED")
+		{
+			$('#status').html("<b >ABORTED</b>");
+			$('#game_info').html("<b>GAME ABORTED DUE TO PLAYER INACTIVITY</b></br><p>please reset the game</p>");
+			$('#turn').hide(1000);
+			$('#stand').hide(1000);
+			$('#hit').hide(1000);
+			
 		}
 		else {
 			return;
@@ -409,8 +436,8 @@ function refresh_dealer() {
 	var schema;
 	hit_d=1;
 	var sum_dealer=0;
-
-	$.ajax({url: 'blackjack.php/deck/fetch/Dealer' , method: "GET" , headers: {"X-Token": me.token} , success: 
+	/*Edw Pairnw mono ta fylla pou exei traviksei me DEN Ypologizw dynamika tous pontous*/
+	$.ajax({url: 'blackjack.php/deck/fetch/Dealer/cards' , method: "GET" , headers: {"X-Token": me.token} , success: 
 		function(data)
 		{
 			obj=JSON.parse(data);
@@ -418,12 +445,17 @@ function refresh_dealer() {
 			{
 				simbolo=obj[i].symbol;
 				schema=obj[i].sxima;
-				sum_dealer+=parseInt(obj[i].value);
 				$('#card_shown_'+hit_d).html("<img src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 				hit_d+=2;
-			}
-			$('#dealer-score-value').html(sum_dealer);
-			
+			}		
+		} });
+		/*Edw pairnw mono tous pontous poy exoun eisaxthei sthn vash*/
+	$.ajax({url: 'blackjack.php/deck/fetch/Dealer/points' , method: "GET" , headers: {"X-Token": me.token} , success: 
+		function(data)
+		{
+			obj=JSON.parse(data);
+			sum_dealer=parseInt(obj.points);
+			$('#dealer-score-value').html(sum_dealer);		
 		} });
 	
 }
@@ -434,8 +466,8 @@ function refresh_player() {
 	var schema;
 	hit_p=2;
 	var sum_player=0;
-	
-	$.ajax({url: 'blackjack.php/deck/fetch/Player' , method: "GET" , headers: {"X-Token": me.token} , success: 
+	/*Edw Pairnw mono ta fylla pou exei traviksei o player me DEN Ypologizw dynamika tous pontous*/
+	$.ajax({url: 'blackjack.php/deck/fetch/Player/cards' , method: "GET" , headers: {"X-Token": me.token} , success: 
 		function(data)
 		{
 			obj=JSON.parse(data);
@@ -443,12 +475,17 @@ function refresh_player() {
 			{
 				simbolo=obj[i].symbol;
 				schema=obj[i].sxima;
-				sum_player+=parseInt(obj[i].value);
 				$('#card_shown_'+hit_p).html("<img src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 				hit_p+=2;
-			}
-			$('#player-score-value').html(sum_player);
-			
+			}		
+		} });
+		/*Edw pairnw mono tous pontous poy exoun eisaxthei sthn vash*/
+	$.ajax({url: 'blackjack.php/deck/fetch/Player/points' , method: "GET" , headers: {"X-Token": me.token} , success: 
+		function(data)
+		{
+			obj=JSON.parse(data);
+			sum_player=parseInt(obj.points);
+			$('#player-score-value').html(sum_player);			
 		} });
 }
 

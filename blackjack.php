@@ -41,17 +41,48 @@
 										}	
 										break;
 							case 'fetch':
-										if($method=="GET")
-										{
-											fetch_played_cards($request);
+										switch($w=array_shift($request))
+										{		
+											case '':
+											case null:
+													header("HTTP/1.1 400 Bad Request");
+													print json_encode(['errormesg'=>"URL NEEDS MORE INFO ."]);
+													break;
+											case($w=='Player'|| $w=='Dealer'):
+			
+												if($method=="GET")
+												{
+													 $p=array_shift($request);
+													
+													if($p=='points')
+													{
+														fetch_points($w);
+													}
+													else if($p=='cards')
+													{
+														fetch_played_cards($w);
+													}
+													else
+													{
+															header("HTTP/1.1 400 Bad Request");
+															print json_encode(['errormesg'=>"$p suppors either points or cards."]);
+													}
+												}
+												else
+												{
+													header("HTTP/1.1 400 Bad Request");
+													print json_encode(['errormesg'=>"Method $method not allowed here."]);
+												}
+											break;
+												
+												default:
+													header("HTTP/1.1 400 Not Found");
+													break;	
 										}
-										else
-										{
-											header("HTTP/1.1 400 Bad Request");
-											print json_encode(['errormesg'=>"Method $method not allowed here."]);
-										}	
 										break;
+										
 							default:
+									echo "par= $par";
 									header("HTTP/1.1 404 Not Found");
 									break;
 					}		
@@ -250,9 +281,12 @@
 	function check_winner()
 	{
 		global $mysqli;	
-		$statement=$mysqli->prepare("SELECT * 
-									FROM players
-									WHERE points=(SELECT MAX(points) FROM players)");
+		$statement=$mysqli->prepare("SELECT *
+									FROM players 
+									WHERE points=(
+										SELECT max(points)
+										FROM players
+										WHERE points<=21)");
 		$statement->execute();
 		$result=$statement->get_result();
 		$row_count=mysqli_num_rows($result);
@@ -273,6 +307,10 @@
 			{
 				$statement=$mysqli->query("UPDATE game_status SET result='DW' , turn=NULL , status='ENDED'");	
 			}					
+		}
+		else if ($row_count==0)
+		{
+			$statement=$mysqli->query("UPDATE game_status SET result='DRAW' , turn=NULL , status='ENDED'");
 		}
 		else
 		{

@@ -35,14 +35,14 @@
 		$result=$statement->get_result();
 		$status=$result->fetch_assoc();	
 		/*ELEGXO GIA AUTOUS POU PREPEI NA FANE TIME OUT*/
-		$sqlcommand="SELECT COUNT(*) AS INACTIVE FROM players WHERE last_action<(NOW() - INTERVAL 1000 MINUTE)";//KICK INTERVAL EINAI 5 LEPTA 
+		$sqlcommand="SELECT COUNT(*) AS INACTIVE FROM players WHERE last_action<(NOW() - INTERVAL 5 MINUTE)";//KICK INTERVAL EINAI 5 LEPTA 
 		$statement=$mysqli->prepare($sqlcommand);
 		$statement->execute();
 		$r=$statement->get_result();
 		$result=$r->fetch_assoc()['INACTIVE'];
 		if($result>0)
 		{
-			$sqlcommand = "UPDATE players SET username='', token=NULL WHERE last_action< (NOW() - INTERVAL 1000 MINUTE)";
+			$sqlcommand = "UPDATE players SET username='', token=NULL WHERE last_action< (NOW() - INTERVAL 5 MINUTE)";
 			$statement = $mysqli->prepare($sqlcommand);
 			$statement->execute();
 			if($status['status']=='STARTED')//AN TO PAIXNIDI EXEI KSEKINISEI KAI O PAIKTHS ARGISEI PANW APO 5 LEPTA NA KANEI ACTION TRWWEI KICK KAI TO STATUS
@@ -120,7 +120,7 @@
 	function fetch_played_cards($request)
 	{
 		global $mysqli;
-		$melos=$request[0];
+		$melos=$request;
 		if($melos != 'Player' && $melos!='Dealer')
 		{
 			print json_encode(['errormesg' =>"You need to fetch the cards of either PLAYER or DEALER ." ]);
@@ -131,14 +131,40 @@
 			if($melos=='Player')
 			{
 				$statement=$mysqli->query("SELECT id,symbol,value,sxima FROM cards WHERE player_cards_played=1");
-				header("HTTP/1.1 200 OK");
+				header('HTTP/1.1 200 OK');
 				print json_encode($r=$statement->fetch_all(MYSQLI_ASSOC), JSON_PRETTY_PRINT);
 			}
 			else
 			{
 				$statement=$mysqli->query("SELECT id,symbol,value,sxima FROM cards WHERE dealer_cards_played=1");
-				header("HTTP/1.1 200 OK");
+				header('HTTP/1.1 200 OK');
 				print json_encode($r=$statement->fetch_all(MYSQLI_ASSOC), JSON_PRETTY_PRINT);
+			}
+		}
+	}
+	
+	function fetch_points($request)
+	{
+		global $mysqli;
+        $melos=$request;
+		if($melos != 'Player' && $melos!='Dealer')
+		{
+			print json_encode(['errormesg' =>"You need to fetch the points of either PLAYER or DEALER ." ]);
+			exit;
+		}
+		else
+		{
+			if($melos=='Player')
+			{
+				$statement=$mysqli->query("SELECT points FROM players WHERE melos like 'Player'");
+				header('HTTP/1.1 200 OK');
+				print json_encode($r=$statement->fetch_assoc(), JSON_PRETTY_PRINT);
+			}
+			else
+			{
+				$statement=$mysqli->query("SELECT points FROM players WHERE melos like 'Dealer'");
+				header('HTTP/1.1 200 OK');
+				print json_encode($r=$statement->fetch_assoc(), JSON_PRETTY_PRINT);
 			}
 		}
 	}

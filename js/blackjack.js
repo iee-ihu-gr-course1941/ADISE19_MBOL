@@ -516,4 +516,74 @@ function ace_eleven(){
 	ace_point=11;
 	$('#ace').hide(1000);
 }
+
+function autoDealer(){
+	if (game_status.turn=='Dealer')
+	{
+	while (dealer_points <= 16)
+	{
+		for(i=0;i<dealer_cards.length;i++)
+		{
+			obj=dealer_cards[i];
+			if(obj.symbol!="A")
+				{
+					dealer_points+=parseInt(obj.value);
+				
+				}
+				else 
+				{
+					if(ace_point==1)
+						dealer_points+=parseInt($('#ace_one').html());
+					else if(ace_point==11)
+						dealer_points+=parseInt($('#ace_eleven').html());
+				}
+			$('#dealer-score-value').html(dealer_points);	
+		}
+		if (dealer_points =< 16)
+		{
+			do_hit();
+		}
+		else
+		{
+			do_stand();
+		}
+	}
+	}
+}
+
+function create_autoDealer(){
+	var username = $Computer;		
+	
+	var melos=$Dealer;
+	$.ajax({url: "blackjack.php/players/"+melos+"/"+username, 
+			method: 'PUT',
+			dataType: "json",
+			headers: {"X-Token": me.token},
+			contentType: 'application/json',
+			data: JSON.stringify( {username: $Computer, melos: $Dealer}),
+			success: login_result ,
+			error: login_error
+			});
+}
+}
+
+function login_to_vsComp() {
+	if($('#username').val()=='' ||  $('#username').val()== null ) {
+		alert('You have to set a username');
+		return;
+	}
+	var username = $('#username').val();		
+	
+	var melos=$Player;
+	$.ajax({url: "blackjack.php/players/"+melos+"/"+username, 
+			method: 'PUT',
+			dataType: "json",
+			headers: {"X-Token": me.token},
+			contentType: 'application/json',
+			data: JSON.stringify( {username: $('#username').val(), melos: Player}),
+			success: login_result ,
+			error: login_error
+			});
+	create_autoDealer();
+}
 });

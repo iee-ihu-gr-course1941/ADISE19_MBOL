@@ -64,9 +64,9 @@ function calculate_points() {
 				else 
 				{
 					if(ace_point==1)
-						player_points+=parseInt($('#ace_one').html());
+						player_points+=parseInt(ace_point);
 					else if(ace_point==11)
-						player_points+=parseInt($('#ace_eleven').html());
+						player_points+=parseInt(ace_point);
 				}
 				$('#player-score-value').html(player_points);
 			}
@@ -84,9 +84,9 @@ function calculate_points() {
 				else 
 				{
 					if(ace_point==1)
-						dealer_points+=parseInt($('#ace_one').html());
+						dealer_points+=parseInt(ace_point);
 					else if(ace_point==11)
-						dealer_points+=parseInt($('#ace_eleven').html());
+						dealer_points+=parseInt(ace_point);
 				}
 			$('#dealer-score-value').html(dealer_points);	
 			}

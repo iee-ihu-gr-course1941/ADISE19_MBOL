@@ -30,6 +30,7 @@ $(function () {
 	$('#display_winner').hide();
 	$('#turn').hide();
 	$('#ace').hide();
+	$('#scores').hide();
 	
 	$('#take_card').prop('disabled', true);
 	$('#hit').prop('disabled', true);
@@ -94,9 +95,6 @@ function calculate_points() {
 		register_points();
 	}	 
 }
-
-
-
 
 function register_points() {
 	if(game_status.turn=='Player')
@@ -186,7 +184,7 @@ function game_status_update() {
 		if(game_status.status=='NOT ACTIVE')
 		{
 			$('#status').html("<p><b>"+game_status.status+ "</b></p>");	
-		}
+		} 
 		else if(game_status.status=='INITIALIZED')
 		{	
 			$('#game_info').show(1000);
@@ -208,6 +206,7 @@ function game_status_update() {
 			}});
 		}
 		else if (game_status.status=="STARTED") {
+				$('#scores').show(1000);
 				$('#take_card').prop('disabled', false);
 				$('#status').html("<p><b>"+game_status.status+ "</b></p>");
 				if(game_status.turn!= null)

@@ -1,17 +1,30 @@
 #body {
 	background-image: url(classic-cards/blackjack-background-8.jpg);
 	background-repeat: no-repeat;
-	background-size: cover;
+	background-attachment: fixed;
+	background-size: 100% 100%;
 }
 #player_score{
+	position: absolute;
+	top: 170px;
+	left: 550px;
 	font-size:24px;
 	text-shadow:1px;
 	color:red;
 }
 #player-chips{
+	position: absolute;
+	top: 170px;
+	left: 950px;
 	font-size:24px;
 	text-shadow:1px;
 	color:red;
+}
+#player-score-value{
+	text-align: center;
+}
+#dealer-score-value{
+	text-align: center;
 }
 #deckContainer{
 	height: 100px;
@@ -28,14 +41,65 @@
 	top: 0px;
 	left: 340px;
 }
-#deck-image{
-	display: block;
-	margin-left: auto;
-	margin-right: auto;
+.btn-secondary.btn-lg {
+    width:100%;
+    height: 70px;
+    padding: 10px 16px;
+    border-radius: 35px;
+	line-height: 1.33;
+	text-align: center;
+    font-size: 15px;
+	
+}
+#username{
 	width: auto;
+	height: auto;
+}
+#take_card_div{
+	position: absolute;
+	top: 745px;
+	left: 800px;
+}
+#take_card{
+	font-size: 20px;
+	text-align: center;
+	width: 100%;
+    height: 50px;
+	border-radius: 50%;
+}
+#hit_div{
+	position: absolute;
+	top: 735px;
+	left: 530px;
+}
+#hit{
+	font-size: 20px;
+	text-align: center;
+	width: 100%;
+    height: 50px;
+	border-radius: 50%;
+}
+#stand_div{
+	position: absolute;
+	top: 730px;
+	left: 1080px;
+}
+#stand{
+	font-size: 20px;
+	text-align: center;
+	width: 100%;
+    height: 50px;
+	border-radius: 50%;
+}
+#bj_reset_div{
+	position: absolute;
+	top: 80px;
+	left: 1180px;
+}
+#game_initializer{
 	position: relative;
-	top: 0px;
-	left: 0px;
+	top: -250px;
+	left: 650px;
 }
 #cards{
 	display: grid;
@@ -106,6 +170,9 @@
 	padding: 10px;
 }
 .game_info{
+	position: relative;
+	top: -50px;
+	left: 120px;
 	color: red;
 	width: 360px;
 	height: 80px;
@@ -114,9 +181,13 @@
 	padding: 10px;
 }
 .turn{
+	position: relative;
+	top: -20px;
+	left: 700px;
 	color: red;
-	width: 350px;
+	width: 250px;
 	height: 50px;
+	text-align: center;
 	border: 2px solid red;
 	border-radius: 12px;
 	padding: 10px;
@@ -128,8 +199,8 @@
 }
 #display_winner {
 	position: relative;
-	left: 650px;
-	top: 240px;
+	top: 200px;
+	text-align: center;
 	color: red;
 	font-size:36px;
 	text-shadow:1px;

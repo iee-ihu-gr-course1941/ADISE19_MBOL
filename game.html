@@ -20,13 +20,9 @@
 			<div class="turn" id="turn"></div>
 			<div class="ace" id="ace">
 				<div class="ace_image" id="ace_image"></div>
-				<button id="ace_one">1</button>
-				<button id="ace_eleven">11</button>
+				<button id="ace_one" class="btn btn-danger"><b>1</b></button>
+				<button id="ace_eleven" class="btn btn-danger"><b>11</b></button>
 			</div>
-		<div id="deckContainer">
-			<!--<img id="deck-image" src="classic-cards/b2fv.png" width="71" height="96"/>
-			<img id="small-card" src="classic-cards/b2fv.png" width="35" height="48" />-->
-		</div>
 		<div id="display_winner"></div>
 		<div id="cards">
 			<div class="card" id="card_shown_1"></div>
@@ -48,29 +44,36 @@
 			<div class="card_5" id="card_shown_9"></div>
 			<div class="card_5" id="card_shown_10"></div>
 		</div>
-		<div id="container" style="position: relative; left: 0px; height:250px; width:100%"></div>
-			<div id='game_initializer'>
-				<input type="text" id='username'>
+			<div id="game_initializer">
+				<input type="text" id="username">
 				<select id='ch_seat' class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					<option value='Dealer'>Dealer</option>
 					<option value='Player'>Player</option>
 				</select>
-				<button id='bj_login' class='btn btn-success'>Sit</button>
+				<button id='bj_login' class='btn btn-success'><b>Sit</b></button>
 			</div>
-			<div class="start-game-area" >
-				<button id="take_card" disabled='disabled' class="btn btn-danger">Deal</button>
-				<button id="hit" disabled='disabled' class="btn btn-danger">Hit</button>
-				<button id="stand" disabled='disabled' class="btn btn-danger">Stand</button>
-				<button id='bj_reset' class='btn btn-secondary'>Reset</button>
-				<div id="player_score">
-					<b>Player Score:</b>  
-					<div id="player-score-value">0</div>
+				<div id="take_card_div">
+					<button id='take_card' disabled='disabled' class="btn btn-danger"><b>Deal</b></button>
 				</div>
-				<div id="player-chips">
-					<b>Dealer Score:</b>
-				   <div id="dealer-score-value">0</div>
-				   
+				<div id="hit_div">
+					<button id='hit' disabled='disabled' class="btn btn-danger"><b>Hit</b></button>
 				</div>
-			</div>
+				<div id="stand_div">
+					<button id='stand' disabled='disabled' class="btn btn-danger"><b>Stand</b></button>
+				</div>
+				<div id="bj_reset_div">
+					<button id='bj_reset' class='btn btn-secondary btn-lg'><b>Reset</b></button>
+				</div>
+				<div id="scores">
+					<div id="player_score">
+						<b>Player Score</b> 
+						<div id="player-score-value">0</div>
+					</div>
+					<div id="player-chips">
+						<b>Dealer Score</b>
+						<div id="dealer-score-value">0</div> 
+					</div>
+				</div>
+
 	</body>                                                                 
  </html>

@@ -1,55 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-	<meta charset="utf-8">
-	<meta name="viiwport" content="width=device=width, initial-scale=1, shrink-to-fit="no">
-	<meta name="description" content="">
-	<meta name="author" content="">
-	<title>Blackjack MBOL</title>
-	
-	<link href="bootstrap/bootstrap.min.css" rel="stylesheet">
-	<script src="bootstrap/jquery-3.2.1.min.js"></script>
-    <script src="bootstrap/bootstrap.min.js"></script>
-    <script src="jquery-ui-1.12.1/jquery-ui.min.js"></script>
-	<link href="jquery-ui-1.12.1/jquery-ui.min.css" rel="stylesheet">
-	
-	
-</head>
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+	<meta name="author" content="">                                         
+	<title> BlackJack </title> 
+		<link href="bootstrap/bootstrap.min.css" rel="stylesheet">
+		<link href="mystyle.css" rel="stylesheet">	
+		<script src="bootstrap/jquery-3.2.1.min.js"></script>
+		<script src="bootstrap/bootstrap.min.js"></script>
+		<script src="jquery-ui-1.12.1/jquery-ui.min.js"></script>
+		<link href="jquery-ui-1.12.1/jquery-ui.min.css" rel="stylesheet">        
+    <script type="text/javascript" src="js/blackjack.js"> </script> 
+  </head>
+  <body>
+    <div class="container-fluid full-width-div" id="body">
+      <div class="row row_height_1st">
+        <div class="col-xs-12 col-md-6">
+          <div class="status" id="status"></div>
+          <div class="game_info" id="game_info"></div>
 
+          <span class="ace" id="ace">
+            <p><b>Choose your Ace's value: </b></p>
+            <span class="ace_image" id="ace_image"></span>
+            <button id="ace_one"><b>1</b></button>
+            <button id="ace_eleven" ><b>11</b></button>
+          </span>
 
-<body>
-<h1>Blackjack</h1>
-<div id='game_initializer'>
-<input id='username'>
-<select id='ch_seat'>
-<option value='D'>Dealer</option>
-<option value='sp'>Player</option>
-</select>
-<button id='bj_login' class='btn btn-primary'>ΚΑΘΙΣΕ ΣΤΟ ΤΡΑΠΕΖΙ</button><br>
-</div>
+        </div>
+        <div class="col-md-6">
+          <div id="bj_reset_div">
+            <button id='bj_reset' class='btn btn-secondary btn-lg'><b>Reset</b></button>
+          </div>
+        </div>
+      </div>
+      <div class="row row_height_2nd">
+        <div class="col-xs-12 col-md-4">
+          <div class="dealer_score" id="player-chips">
+						<b>Dealer Score</b>
+						<div id="dealer-score-value">0</div> 
+          </div>
+          
+          
+        </div>
+        <div class="col-md-4">
+          <p class="turn" id="turn"></p>
+        </div>
+        <div class="col-md-4">
+          <div class="player_score">
+						<b id="player_score">Player Score</b> 
+						<div id="player-score-value">0</div>
+					</div>
 
-<br>
+         
+        </div>
+      </div>
+      <div class="row row_height_3rd">
+        <div class="col-xs-12 col-md-4">
+          <div id="cards">
+            <div class="card" id="card_shown_1"></div>
+          </div>
+          <div id="cards_2">
+            <div class="card_2" id="card_shown_3"></div>
+          </div>
+          <div id="cards_3">
+            <div class="card_3" id="card_shown_5"></div>
+          </div>
+          <div id="cards_4">
+            <div class="card_4" id="card_shown_7"></div>
+          </div>
+          <div id="cards_5">
+            <div class="card_5" id="card_shown_9"></div>
+          </div>
+        </div>
 
-<div id='game_info'>
-</div>
+        <div class="col-md-4">
+          <div id="display_winner"></div>
+          <div id="game_initializer">
+            <input type="text" id="username">
+            <select id='ch_seat' class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <option value='Dealer'>Dealer</option>
+              <option value='Player'>Player</option>
+            </select>
+            <button id='bj_login' class='btn btn-success'><b>Sit</b></button>
+          </div>
+        </div>
 
-
-<br>
-
-<div id='move_div'>
-<button id='take_card' class='btn btn-primary'>Hit</button>
-<button id='stop' class='btn btn-primary'>Stand</button><br>
-</div>
-<br>
-
-
-<button id='bj_reset' class='btn btn-primary'>Έναρξη/Reset</button>
-
-
-
-
-
-
-
-</body>
+        <div class="col-md-4">
+          <div id="cards">
+            <div class="card" id="card_shown_2"></div>
+          </div>
+          <div id="cards_2">
+            <div class="card_2" id="card_shown_4"></div>
+          </div>
+          <div id="cards_3">
+            <div class="card_3" id="card_shown_6"></div>
+          </div>
+          <div id="cards_4">
+            <div class="card_4" id="card_shown_8"></div>
+          </div>
+          <div id="cards_5">
+            <div class="card_5" id="card_shown_10"></div>
+          </div>
+        </div>
+      </div>
+      <div class="row row_height_4th">
+        <div class="col-xs-12 col-md-4">
+        </div> 
+        <div class="col-md-4">
+          <span id="hit_div">
+            <button id='hit' disabled='disabled' class="bhit btn btn-danger"><b>Hit</b></button>
+          </span> 
+          <span id="take_card_div">
+            <button id='take_card' disabled='disabled' class="bdeal btn btn-danger"><b>Deal</b></button>
+          </span>
+          <span id="stand_div">
+            <button id='stand' disabled='disabled' class="bstand btn btn-danger"><b>Stand</b></button>
+          </span>
+          </div>
+          <div class="col-md-4">
+          
+          </div> 
+        </div>
+       
+      </div>
+    </div> 
+  </body>
 </html>

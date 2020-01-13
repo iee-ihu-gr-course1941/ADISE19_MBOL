@@ -223,17 +223,30 @@
 
 }
 
-.ace{
-    position:relative;
-    left:700px;
-    top:370px;
-	width: 420px;
-    height: 420px;
-    color:red;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size:18px;
+.p_ace
+{
+  text-align:center;
+  position:relative;
+  top:250px;
+  font-family: Arial, Helvetica, sans-serif;
+  color: red;
+  font-size:15px;
+}
+.btn.btn-danger.ace{
+	position:relative;
+	left:237px;
+	top:290px;
     padding:5px;
 
+}
+
+.ace_image
+{
+	position:relative;
+	left:240px;
+	top:270px;
+	width:51px;
+	height:76px;
 }
 
 .row_height_1st

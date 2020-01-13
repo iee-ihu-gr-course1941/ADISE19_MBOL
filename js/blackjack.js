@@ -284,7 +284,7 @@ function do_deal() {
 					$('#card_shown_2').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 					counter_p=1;
 					if(simbolo=="A"){
-						$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
+						$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='51px' height='76px'/>");
 						$('#ace').show(1000);
 					}
 				}
@@ -296,7 +296,7 @@ function do_deal() {
 					$('#card_shown_1').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 					counter_d=1;
 					if(simbolo=="A"){
-						$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
+						$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='51px' height='76px'/>");
 						$('#ace').show(1000);
 					}
 				}	
@@ -314,7 +314,7 @@ function do_deal() {
 					$('#card_shown_4').html("<img id='cards_2' src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 					counter_p=2;
 					if(simbolo=="A"){
-						$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
+						$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='51px' height='76px'/>");
 						$('#ace').show(1000);
 					}					
 				}
@@ -326,7 +326,7 @@ function do_deal() {
 					$('#card_shown_3').html("<img id='cards_2' src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 					counter_d=2;
 					if(simbolo=="A"){
-						$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
+						$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='51px' height='76px'/>");
 						$('#ace').show(1000);
 					}
 				}
@@ -355,7 +355,7 @@ function do_hit() {
 							schema=obj.sxima;
 							$('#card_shown_'+hit_p).html("<img src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 							if(simbolo=="A"){
-								$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
+								$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='51px' height='76px'/>");
 								$('#ace').show(1000);
 							}
 						}
@@ -366,7 +366,7 @@ function do_hit() {
 							schema=obj.sxima;
 							$('#card_shown_'+hit_p).html("<img src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 							if(simbolo=="A"){
-								$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
+								$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='51px' height='76px'/>");
 								$('#ace').show(1000);
 							}
 						}
@@ -387,7 +387,7 @@ function do_hit() {
 							schema=obj.sxima;
 							$('#card_shown_'+hit_d).html("<img src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 							if(simbolo=="A"){
-								$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
+								$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='51px' height='76px'/>");
 								$('#ace').show(1000);
 							}
 						}
@@ -398,7 +398,7 @@ function do_hit() {
 							schema=obj.sxima;
 							$('#card_shown_'+hit_d).html("<img src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 							if(simbolo=="A"){
-								$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
+								$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='51px' height='76px'/>");
 								$('#ace').show(1000);
 							}
 						}

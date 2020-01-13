@@ -75,7 +75,18 @@
 	width: auto;
 	height: auto;
 }
-
+#ch_seat{
+	position:relative;
+	top: -38px;
+	left: 20px;
+	background-color: Cornsilk;
+}
+#bj_login{
+	position:relative;
+	top: -38px;
+	left: 23px;
+	background-color: Sienna 	 	 	 	;
+}
 .status{
 	color: red;
 	width: 120px;
@@ -128,10 +139,9 @@
     text-shadow:1px;
     top:35%;
 }
-
 #game_initializer{
     position: relative;
-    right:0px;
+    left:60px;
     top:20%;
     text-align: center;
 

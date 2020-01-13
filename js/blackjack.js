@@ -516,7 +516,7 @@ function ace_eleven(){
 	ace_point=11;
 	$('#ace').hide(1000);
 }
-
+/*
 function autoDealer(){
 	if (game_status.turn=='Dealer')
 	{
@@ -586,4 +586,5 @@ function login_to_vsComp() {
 			});
 	create_autoDealer();
 }
+*/
 });

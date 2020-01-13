@@ -187,6 +187,7 @@ function game_status_update() {
 		} 
 		else if(game_status.status=='INITIALIZED')
 		{	
+			
 			$('#game_info').show(1000);
 			$('#status').html("<p><b>"+game_status.status+ "</b></p>");
 			$.ajax({url: 'blackjack.php/players/' , method:"GET", headers: {"X-token":me.token} , success:function(data)
@@ -378,7 +379,7 @@ function do_hit() {
 				}
 				else if(game_status.turn=='Dealer')
 				{
-					if(counter_p<5)
+					if(counter_d<5)
 					{	
 						if(hit_d==5)
 						{

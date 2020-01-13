@@ -172,11 +172,11 @@ function login_error(data,y,z,c) {
 
 function game_status_update() {
 	
-	melos=$('#ch_seat').val(); 
+	//melos=$('#ch_seat').val(); 
 	
 	$.ajax({url: "blackjack.php/status/", success: function(data)
 	{
-		last_update=new Date().getTime();
+		//last_update=new Date().getTime();
 		game_status=data[0];
 		var obj_player;
 		var obj_dealer;
@@ -437,7 +437,7 @@ function refresh_dealer() {
 	var schema;
 	hit_d=1;
 	var sum_dealer=0;
-	/*Edw Pairnw mono ta fylla pou exei traviksei me DEN Ypologizw dynamika tous pontous*/
+	/*Edw Pairnw mono ta fylla pou exei traviksei kai DEN Ypologizw dynamika tous pontous*/
 	$.ajax({url: 'blackjack.php/deck/fetch/Dealer/cards' , method: "GET" , headers: {"X-Token": me.token} , success: 
 		function(data)
 		{

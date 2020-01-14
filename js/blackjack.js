@@ -245,10 +245,10 @@ function game_status_update() {
 			clearInterval(timer);
 			clearInterval(timer_cards);			
 		}
-		else if(game_status.status=="ABORTED")
+		else if(game_status.status=="TERMINATED")
 		{
-			$('#status').html("<b >ABORTED</b>");
-			$('#game_info').html("<b>GAME ABORTED DUE TO PLAYER INACTIVITY</b></br><p>please reset the game</p>");
+			$('#status').html("<b >TERMINATED</b>");
+			$('#game_info').html("<b>GAME TERMINATED DUE TO PLAYER INACTIVITY</b></br><p>please reset the game</p>");
 			$('#turn').hide(1000);
 			$('#stand').hide(1000);
 			$('#hit').hide(1000);

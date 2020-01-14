@@ -172,11 +172,11 @@ function login_error(data,y,z,c) {
 
 function game_status_update() {
 	
-	melos=$('#ch_seat').val(); 
+	//melos=$('#ch_seat').val(); 
 	
 	$.ajax({url: "blackjack.php/status/", success: function(data)
 	{
-		last_update=new Date().getTime();
+		//last_update=new Date().getTime();
 		game_status=data[0];
 		var obj_player;
 		var obj_dealer;
@@ -187,6 +187,7 @@ function game_status_update() {
 		} 
 		else if(game_status.status=='INITIALIZED')
 		{	
+			
 			$('#game_info').show(1000);
 			$('#status').html("<p><b>"+game_status.status+ "</b></p>");
 			$.ajax({url: 'blackjack.php/players/' , method:"GET", headers: {"X-token":me.token} , success:function(data)
@@ -284,7 +285,7 @@ function do_deal() {
 					$('#card_shown_2').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 					counter_p=1;
 					if(simbolo=="A"){
-						$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
+						$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='51px' height='76px'/>");
 						$('#ace').show(1000);
 					}
 				}
@@ -296,7 +297,7 @@ function do_deal() {
 					$('#card_shown_1').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 					counter_d=1;
 					if(simbolo=="A"){
-						$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
+						$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='51px' height='76px'/>");
 						$('#ace').show(1000);
 					}
 				}	
@@ -314,7 +315,7 @@ function do_deal() {
 					$('#card_shown_4').html("<img id='cards_2' src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 					counter_p=2;
 					if(simbolo=="A"){
-						$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
+						$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='51px' height='76px'/>");
 						$('#ace').show(1000);
 					}					
 				}
@@ -326,7 +327,7 @@ function do_deal() {
 					$('#card_shown_3').html("<img id='cards_2' src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 					counter_d=2;
 					if(simbolo=="A"){
-						$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
+						$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='51px' height='76px'/>");
 						$('#ace').show(1000);
 					}
 				}
@@ -355,7 +356,7 @@ function do_hit() {
 							schema=obj.sxima;
 							$('#card_shown_'+hit_p).html("<img src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 							if(simbolo=="A"){
-								$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
+								$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='51px' height='76px'/>");
 								$('#ace').show(1000);
 							}
 						}
@@ -366,7 +367,7 @@ function do_hit() {
 							schema=obj.sxima;
 							$('#card_shown_'+hit_p).html("<img src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 							if(simbolo=="A"){
-								$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
+								$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='51px' height='76px'/>");
 								$('#ace').show(1000);
 							}
 						}
@@ -378,7 +379,7 @@ function do_hit() {
 				}
 				else if(game_status.turn=='Dealer')
 				{
-					if(counter_p<5)
+					if(counter_d<5)
 					{	
 						if(hit_d==5)
 						{
@@ -387,7 +388,7 @@ function do_hit() {
 							schema=obj.sxima;
 							$('#card_shown_'+hit_d).html("<img src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 							if(simbolo=="A"){
-								$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
+								$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='51px' height='76px'/>");
 								$('#ace').show(1000);
 							}
 						}
@@ -398,7 +399,7 @@ function do_hit() {
 							schema=obj.sxima;
 							$('#card_shown_'+hit_d).html("<img src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 							if(simbolo=="A"){
-								$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
+								$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='51px' height='76px'/>");
 								$('#ace').show(1000);
 							}
 						}
@@ -436,7 +437,7 @@ function refresh_dealer() {
 	var schema;
 	hit_d=1;
 	var sum_dealer=0;
-	/*Edw Pairnw mono ta fylla pou exei traviksei me DEN Ypologizw dynamika tous pontous*/
+	/*Edw Pairnw mono ta fylla pou exei traviksei kai DEN Ypologizw dynamika tous pontous*/
 	$.ajax({url: 'blackjack.php/deck/fetch/Dealer/cards' , method: "GET" , headers: {"X-Token": me.token} , success: 
 		function(data)
 		{
@@ -516,7 +517,7 @@ function ace_eleven(){
 	ace_point=11;
 	$('#ace').hide(1000);
 }
-
+/*
 function autoDealer(){
 	if (game_status.turn=='Dealer')
 	{
@@ -586,4 +587,5 @@ function login_to_vsComp() {
 			});
 	create_autoDealer();
 }
+*/
 });

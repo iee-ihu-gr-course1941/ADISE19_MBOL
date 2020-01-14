@@ -565,7 +565,7 @@ function create_autoDealer(){
 			error: login_error
 			});
 }
-}
+
 
 function login_to_vsComp() {
 	if($('#username').val()=='' ||  $('#username').val()== null ) {

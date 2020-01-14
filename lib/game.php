@@ -46,7 +46,7 @@
 			$statement = $mysqli->prepare($sqlcommand);
 			$statement->execute();
 			if($status['status']=='STARTED')//AN TO PAIXNIDI EXEI KSEKINISEI KAI O PAIKTHS ARGISEI PANW APO 5 LEPTA NA KANEI ACTION TRWWEI KICK KAI TO STATUS
-				$new_status='ABORTED'; //GINETAI ABOIRTED
+				$new_status='TERMINATED'; //GINETAI TERMINATED
 			
 		}
 		
@@ -123,6 +123,7 @@
 		$melos=$request;
 		if($melos != 'Player' && $melos!='Dealer')
 		{
+			header("HTTP/1.1 400 Bad Request");
 			print json_encode(['errormesg' =>"You need to fetch the cards of either PLAYER or DEALER ." ]);
 			exit;
 		}

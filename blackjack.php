@@ -76,7 +76,7 @@
 											break;
 												
 												default:
-													header("HTTP/1.1 400 Not Found");
+													header("HTTP/1.1 404 Not Found");
 													break;	
 										}
 										break;
@@ -108,7 +108,14 @@
 			show_deck();
 		}
 		else if ($method=="POST")
-			reset_deck();
+		{	reset_deck(); }
+		else
+		{
+			header("HTTP/1.1 400 Bad Request");
+			print json_encode(['errormesg'=>"Method $method not allowed here."]);	
+			exit;
+		}
+
 	}
 	
 	
@@ -149,7 +156,10 @@
 						header("HTTP/1.1 400 Bad Request");
 						print json_encode(['errormesg'=>"Method $method not allowed here."]);
 					}
-					break;	
+					break;
+			default:
+				header("HTTP/1.1 400 Not Found");
+				exit;			
 		}
 		
 	}
@@ -207,7 +217,7 @@
 		else
 		{	
 			header("HTTP/1.1 400 Bad Request");
-			header("['errormesh'=>You are neither the Player nor the Dealer.]");
+			header("['errormesg'=>You are neither the Player nor the Dealer.]");
 			exit;
 		}
 		header("HTTP/1.1 200 OK");
@@ -315,6 +325,7 @@
 		else
 		{
 			header("HTTP/1.1 400 Bad Request");
+			exit;
 		}	
 		$selectcommand="SELECT * FROM game_status";
 		$statement=$mysqli->query($selectcommand);		

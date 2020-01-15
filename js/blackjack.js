@@ -3,10 +3,6 @@ var game_status={};
 var last_update=new Date().getTime();
 var timer=null;
 var timer_cards=null;
-//Timer gia refresh dealer cards...
-var timer_refresh_cards=null;
-//Timer gia refresh dealer points...
-var timer_refresh_points=null;
 var melos=null;
 var hit_p=6;
 var hit_d=5;
@@ -226,9 +222,6 @@ function game_status_update() {
 				$('#scores').show(1000);
 				$('#take_card').prop('disabled', false);
 				$('#status').html("<p><b>"+game_status.status+ "</b></p>");
-				//timers....
-				timer_refresh_cards=setInterval(function(){ refresh_dealer_cards(); },1000);
-				timer_refresh_points=setInterval(function(){ refresh_dealer_points(); },1000);
 				if(game_status.turn!= null)
 				{
 					$('#turn').show(1000);

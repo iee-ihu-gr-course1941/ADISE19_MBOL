@@ -9,8 +9,10 @@
 	$method=$_SERVER['REQUEST_METHOD'];
 	$request=explode('/',trim($_SERVER['PATH_INFO'],'/'));
 	$input = json_decode(file_get_contents('php://input'),true);
+	
 	if(isset($_SERVER['HTTP_X_TOKEN'])) {
 		$input['token']=$_SERVER['HTTP_X_TOKEN'];
+		
 	}
 	switch ($uri=array_shift($request)) 
 	{
@@ -41,31 +43,39 @@
 										}	
 										break;
 							case 'fetch':
-										switch($w=array_shift($request))
+										if(!isset($input['melos'])) 
+										{
+											header("HTTP/1.1 400 Bad Request");
+											print json_encode(['errormesg'=>"Didn't choose a role."]);
+											exit;
+										}
+										$melos=$input['melos'];
+
+										if(!isset($input['action'])) 
+										{
+											header("HTTP/1.1 400 Bad Request");
+											print json_encode(['errormesg'=>"Didn't give an action."]);
+											exit;
+										}
+										$action=$input['action'];
+										switch($melos)
 										{		
-											case '':
-											case null:
-													header("HTTP/1.1 400 Bad Request");
-													print json_encode(['errormesg'=>"URL NEEDS MORE INFO ."]);
-													break;
-											case($w=='Player'|| $w=='Dealer'):
+											case($melos=='Player'|| $melos=='Dealer'):
 			
-												if($method=="GET")
-												{
-													 $p=array_shift($request);
-													
-													if($p=='points')
+												if($method=="POST")
+												{	
+													if($action=='points')
 													{
-														fetch_points($w);
+														fetch_points($input);
 													}
-													else if($p=='cards')
+													else if($action=='cards')
 													{
-														fetch_played_cards($w);
+														fetch_played_cards($input);
 													}
 													else
 													{
 															header("HTTP/1.1 400 Bad Request");
-															print json_encode(['errormesg'=>"$p suppors either points or cards."]);
+															print json_encode(['errormesg'=>"Action $action suppors either points or cards."]);
 													}
 												}
 												else
@@ -73,13 +83,12 @@
 													header("HTTP/1.1 400 Bad Request");
 													print json_encode(['errormesg'=>"Method $method not allowed here."]);
 												}
-											break;
-												
-												default:
-													header("HTTP/1.1 404 Not Found");
-													break;	
+											break;	
+											default:
+												header("HTTP/1.1 400 Not Found");
+												break;	
 										}
-										break;
+									break;
 										
 							default:
 									echo "par= $par";
@@ -88,7 +97,7 @@
 					}		
 					break;
 		case "players":
-					manipulate_players($method,$request,$input,$input['token']);
+					manipulate_players($method,array_shift($request),$input,$input['token']);
 					break;
 		case "status":
 					if(count($request)==0)
@@ -108,22 +117,15 @@
 			show_deck();
 		}
 		else if ($method=="POST")
-		{	reset_deck(); }
-		else
-		{
-			header("HTTP/1.1 400 Bad Request");
-			print json_encode(['errormesg'=>"Method $method not allowed here."]);	
-			exit;
-		}
-
+			reset_deck();
 	}
 	
 	
 	
 	/*USERS FUNCTIONS*/
-	function manipulate_players($method,$request,$input,$token)
+	function manipulate_players($method,$s,$input,$token)
 	{
-		switch($name=array_shift($request))
+		switch($s)
 		{
 			case '':
 			case null:
@@ -137,29 +139,64 @@
 						print json_encode(['errormesg'=>"Method $method not allowed here."]);
 					}
 					break;
-			case($name=='Player' || $name=='Dealer'):
-					if($method=="GET")
+			case $s=="showPlayersInfo":
+				if($input['melos']=='Player'|| $input['melos']=='Dealer')
 					{
-						show_player_info($name);
-					}
-					else if($method=="PUT")
-					{
-						
-						register_user($name,$request);
-					}
-					else if($method=="POST")
-					{
-						update_points($request,$token);
+						if($method=="POST")
+						{
+								show_player_info($input);
+						}
+						else{
+							header("HTTP/1.1 400 Bad Request");
+							print json_encode(['errormesg'=>"Method $method not allowed here."]);
+						}
 					}
 					else
 					{
 						header("HTTP/1.1 400 Bad Request");
-						print json_encode(['errormesg'=>"Method $method not allowed here."]);
+						print json_encode(['errormesg'=>"Only Player or Dealer Allowed."]);
 					}
-					break;
+			break;	
+			case $s=="register":
+				if($input['melos']=='Player'|| $input['melos']=='Dealer')
+					{
+						if($method=="PUT")
+						{
+								register_user($input);
+						}
+						else{
+							header("HTTP/1.1 400 Bad Request");
+							print json_encode(['errormesg'=>"Method $method not allowed here."]);
+						}
+					}
+					else
+					{
+						header("HTTP/1.1 400 Bad Request");
+						print json_encode(['errormesg'=>"Only Player or Dealer Allowed."]);
+					}
+			break;
+			case $s=="updatePoints":	
+				if($input['melos']=='Player'|| $input['melos']=='Dealer')
+				{
+					if($method=="POST")
+					{
+							update_points($input,$token);
+					}
+					else
+						{
+							header("HTTP/1.1 400 Bad Request");
+							print json_encode(['errormesg'=>"Method $method not allowed here."]);
+						}
+				}
+				else
+				{
+					header("HTTP/1.1 400 Bad Request");
+					print json_encode(['errormesg'=>"Only Player or Dealer Allowed."]);
+				}				
+				break;
 			default:
-				header("HTTP/1.1 400 Not Found");
-				exit;			
+				header("HTTP/1.1 404 Not Found");
+				exit;				
 		}
 		
 	}
@@ -217,7 +254,7 @@
 		else
 		{	
 			header("HTTP/1.1 400 Bad Request");
-			header("['errormesg'=>You are neither the Player nor the Dealer.]");
+			header("['errormesh'=>You are neither the Player nor the Dealer.]");
 			exit;
 		}
 		header("HTTP/1.1 200 OK");
@@ -325,7 +362,6 @@
 		else
 		{
 			header("HTTP/1.1 400 Bad Request");
-			exit;
 		}	
 		$selectcommand="SELECT * FROM game_status";
 		$statement=$mysqli->query($selectcommand);		

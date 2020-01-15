@@ -3,6 +3,10 @@ var game_status={};
 var last_update=new Date().getTime();
 var timer=null;
 var timer_cards=null;
+//Timer gia refresh dealer cards...
+var timer_refresh_cards=null;
+//Timer gia refresh dealer points...
+var timer_refresh_points=null;
 var melos=null;
 var hit_p=6;
 var hit_d=5;
@@ -222,6 +226,9 @@ function game_status_update() {
 				$('#scores').show(1000);
 				$('#take_card').prop('disabled', false);
 				$('#status').html("<p><b>"+game_status.status+ "</b></p>");
+				//timers....
+				timer_refresh_cards=setInterval(function(){ refresh_dealer_cards(); },1000);
+				timer_refresh_points=setInterval(function(){ refresh_dealer_points(); },1000);
 				if(game_status.turn!= null)
 				{
 					$('#turn').show(1000);
@@ -325,6 +332,7 @@ function do_deal() {
 						$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
 						$('#ace').show(1000);
 					}
+
 				}	
 			} 			
 		});
@@ -355,6 +363,7 @@ function do_deal() {
 						$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
 						$('#ace').show(1000);
 					}
+					
 				}
 			$('#take_card').hide(1000);
 			} 	
@@ -430,6 +439,7 @@ function do_hit() {
 						}
 						hit_d+=2;
 						counter_d++;
+
 					}
 					else alert("You can't hit more than 5 cards!");
 				}
@@ -462,7 +472,7 @@ function refresh_dealer_cards() {
 	var schema;
 	hit_d=1;
 	
-	/*Edw Pairnw mono ta fylla pou exei traviksei me DEN Ypologizw dynamika tous pontous*/
+	/*Edw Pairnw mono ta fylla pou exei traviksei kai DEN Ypologizw dynamika tous pontous*/
 	$.ajax({url: 'blackjack.php/deck/fetch/' ,
 	 method: "POST" , 
 	 headers: {"X-Token": me.token} , 

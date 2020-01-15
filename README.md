@@ -47,14 +47,12 @@ POST /deck/ Κάνει Reset το παιχνίδι,Διαγράφει παίκτ
 GET /deck/hit Ο Παικτης τραβάει μια Random κάρτα απο την στοίβα. Επιστρέφονται τα στοιχεία της κάρτας σε μορφή JSON.
 ```  
 ```
-GET /deck/stand Ο Εκάστοτε παίκτης "σταματάει" και η σειρά πηγαίνει στον επόμενο. Οταν ο dealer παει πάσο ελεγχει τον νικητή και 
-
-επιστρέφει σε JSON τον πίνακα game_status.
+GET /deck/stand 
+Ο Εκάστοτε παίκτης "σταματάει" και η σειρά πηγαίνει στον επόμενο. Οταν ο dealer παει πάσο ελεγχει τον νικητή και επιστρέφει σε JSON τον πίνακα game_status.
 ```  
 ```
-GET /deck/fetch/:x/:y x:(Player||Dealer),y:(cards||points).Επιστρέφονται για τον Player ή Dealer οι κάρτες που έχει τραβήξει  
-    
-ή οι πόντοι που έχουν καταχωρηθεί σε μορφή JSON.
+POST /deck/fetch/ Required JSON data: melos:(Player||Dealer), action:(cards||points).
+Επιστρέφει σε JSON μορφή τις κάρτες που εχει "τραβήξει"/πόντους που εχουν καταχωρήθει στον Player/Dealer
 ``` 
 ```
 Τα στοιχεία /hit και /stand απαιτούν αναγκαστικά να σταλθεί το token του παίκτη στον Server  
@@ -66,17 +64,19 @@ GET /deck/fetch/:x/:y x:(Player||Dealer),y:(cards||points).Επιστρέφον�
 GET /players/ Επιστρέφει σε μορφή JSON όλους τους καταχωρημένους παίκτες
 ```  
 ```
-GET /players/:x, x:(Player||Dealer). Επιστρέφει σε JSON την εγγραφή του :x στο πίνακα players της βάσης
+POST /players/showPlayersInfo/, Required JSON data:  melos:(Player||Dealer).
+Επιστρέφει σε JSON μορφή τα στοιχεία του χρήστη που είναι είτε Player είτε Dealer.
 ```  
 ```
-PUT /players/:x/:username,x:(Player||Dealer) Καταχωρεί ως :x τον χρήστη με όνομα :username καιεπιστρέφει σε JSON την            
-εγγραφή του στον πίνακα players
+PUT /players/register, Required JSON data: melos:(Player||Dealer), username:.
+Καταχωρεί ως :melos τον χρήστη με όνομα :username και επιστρέφει σε JSON την εγγραφή του στον πίνακα players
 ```  
 ```
-POST /players/:x/:points,x:(Player||Dealer) Καταχωρεί τους πόντους :points στον Player ή στον Dealer ανάλογα.
+POST /players/updatePoints, Required JSON data: melos:(Player||Dealer) , points:(Πόντοι). 
+Καταχωρεί τους πόντους :points στον Player ή στον Dealer ανάλογα.
 ```  
 ```
-Το URL καταχώρησης πόντων απαιτεί αναγκαστικα να σταλθεί το token του παίκτη στον Server
+Το /updatePoints απαιτεί αναγκαστικα να σταλθεί το token του παίκτη στον Server
 ```
 
 ### Status  

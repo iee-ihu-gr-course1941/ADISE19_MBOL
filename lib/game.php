@@ -81,10 +81,15 @@
 
 	}
 
-	function update_points($request,$token)
+	function update_points($input,$token)
 	{
 		global $mysqli;
-		$points=$request[0];
+		if(!isset($input['points'])) {
+			header("HTTP/1.1 400 Bad Request");
+			print json_encode(['errormesg'=>"Didn't give any points a role."]);
+			exit;
+		}
+		$points=$input['points'];
 		
 		if($token=='' || $token==NULL)
 		{
@@ -117,13 +122,12 @@
 		$statement->execute();
 		header('HTTP/1.1 200 OK');
 	}	
-	function fetch_played_cards($request)
+	function fetch_played_cards($input)
 	{
 		global $mysqli;
-		$melos=$request;
+		$melos=$input['melos'];
 		if($melos != 'Player' && $melos!='Dealer')
 		{
-			header("HTTP/1.1 400 Bad Request");
 			print json_encode(['errormesg' =>"You need to fetch the cards of either PLAYER or DEALER ." ]);
 			exit;
 		}
@@ -144,10 +148,10 @@
 		}
 	}
 	
-	function fetch_points($request)
+	function fetch_points($input)
 	{
 		global $mysqli;
-        $melos=$request;
+        $melos=$input['melos'];
 		if($melos != 'Player' && $melos!='Dealer')
 		{
 			print json_encode(['errormesg' =>"You need to fetch the points of either PLAYER or DEALER ." ]);

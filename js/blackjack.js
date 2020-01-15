@@ -40,6 +40,7 @@ $(function () {
 	$('#bj_reset').click( reset_card);
 	$('#take_card').click(do_deal);
 	$('#hit').click(do_hit);
+	
 	$('#stand').click(do_stand);
 	$('#ace_one').click(ace_one);
 	$('#ace_eleven').click(ace_eleven);
@@ -115,7 +116,13 @@ function register_points() {
 				$('#hit').hide(1000);
 				$('#stand').html("<b>Fold</b>");
 			}
-			$.ajax({url: 'blackjack.php/players/Player/'+player_points+'/', headers: {"X-Token": me.token} , method: "POST"  , success: function(){ console.log("Success in registering Points of Player "); } });	
+			$.ajax({url: 'blackjack.php/players/updatePoints/', 
+			headers: {"X-Token": me.token} ,
+			 method: "POST"  ,
+			 dataType: "json",
+			 contentType: 'application/json',
+			 data: JSON.stringify( {melos: game_status.turn,points:player_points}),
+			  success: function(){ console.log("Success in registering Points of Player "); } });	
 	}
 	
 	else if(game_status.turn=='Dealer')
@@ -136,7 +143,13 @@ function register_points() {
 				$('#hit').hide(1000);
 				$('#stand').html("<b>Fold</b>");
 		}
-		$.ajax({url: 'blackjack.php/players/Dealer/'+dealer_points+'/', headers: {"X-Token": me.token} , method: "POST"  , success: function(){ console.log("Success in registering Points of Dealer "); } });	
+		$.ajax({url: 'blackjack.php/players/updatePoints/', 
+			headers: {"X-Token": me.token} ,
+			 method: "POST"  ,
+			 dataType: "json",
+			 contentType: 'application/json',
+			 data: JSON.stringify( {melos: game_status.turn, points:dealer_points}),
+			  success: function(){ console.log("Success in registering Points of Dealer "); } });	
 	}	
 }
 
@@ -148,12 +161,12 @@ function login_to_game() {
 	var username = $('#username').val();		
 	
 	var melos=$("#ch_seat").val();
-	$.ajax({url: "blackjack.php/players/"+melos+"/"+username, 
+	$.ajax({url: "blackjack.php/players/register", 
 			method: 'PUT',
 			dataType: "json",
 			headers: {"X-Token": me.token},
 			contentType: 'application/json',
-			data: JSON.stringify( {username: $('#username').val(), melos: ch_seat}),
+			data: JSON.stringify( {username: $('#username').val(), melos: melos }),
 			success: login_result ,
 			error: login_error
 			});
@@ -172,11 +185,11 @@ function login_error(data,y,z,c) {
 
 function game_status_update() {
 	
-	//melos=$('#ch_seat').val(); 
+	melos=$('#ch_seat').val(); 
 	
 	$.ajax({url: "blackjack.php/status/", success: function(data)
 	{
-		//last_update=new Date().getTime();
+		last_update=new Date().getTime();
 		game_status=data[0];
 		var obj_player;
 		var obj_dealer;
@@ -187,7 +200,6 @@ function game_status_update() {
 		} 
 		else if(game_status.status=='INITIALIZED')
 		{	
-			
 			$('#game_info').show(1000);
 			$('#status').html("<p><b>"+game_status.status+ "</b></p>");
 			$.ajax({url: 'blackjack.php/players/' , method:"GET", headers: {"X-token":me.token} , success:function(data)
@@ -219,7 +231,8 @@ function game_status_update() {
 		else if(game_status.status=="ENDED" && flag==true)
 		{
 			flag=false;
-			refresh_dealer();
+			refresh_dealer_cards();
+			refresh_dealer_points();
 			$('#display_winner').show(1000);
 			$('#hit').prop('disabled', true);
 			$('#stand').prop('disabled', true);
@@ -227,14 +240,26 @@ function game_status_update() {
 				$('#display_winner').html("IT'S A DRAW!");
 			}
 			else if (game_status.result=="DW"){
-				$.ajax({url :'blackjack.php/players/Dealer', method:"GET", headers:{"X-token":me.token},success: function(data)
+				$.ajax({url :'blackjack.php/players/',
+				 method:"GET",
+				headers:{"X-token":me.token},
+				dataType: "json",
+				contentType: 'application/json',
+				data: JSON.stringify( {melos:"Dealer"}),
+				success: function(data)
 				{
 					$('#display_winner').html("The Dealer : "+data[0].username+" WINS !");
 				}  });
 				
 			}
 			else if (game_status.result=="PW"){
-				$.ajax({url :'blackjack.php/players/Player', method:"GET", headers:{"X-token":me.token},success: function(data)
+				$.ajax({url :'blackjack.php/players/', 
+				method:"GET",
+				 headers:{"X-token":me.token},
+				 dataType: "json",
+				contentType: 'application/json',
+				data: JSON.stringify( {melos:"Player"}),
+				 success: function(data)
 				{
 					$('#display_winner').html("The Player: "+data[0].username+" WINS !");
 				}  });
@@ -245,10 +270,10 @@ function game_status_update() {
 			clearInterval(timer);
 			clearInterval(timer_cards);			
 		}
-		else if(game_status.status=="TERMINATED")
+		else if(game_status.status=="ABORTED")
 		{
-			$('#status').html("<b >TERMINATED</b>");
-			$('#game_info').html("<b>GAME TERMINATED DUE TO PLAYER INACTIVITY</b></br><p>please reset the game</p>");
+			$('#status').html("<b >ABORTED</b>");
+			$('#game_info').html("<b>GAME ABORTED DUE TO PLAYER INACTIVITY</b></br><p>please reset the game</p>");
 			$('#turn').hide(1000);
 			$('#stand').hide(1000);
 			$('#hit').hide(1000);
@@ -285,7 +310,7 @@ function do_deal() {
 					$('#card_shown_2').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 					counter_p=1;
 					if(simbolo=="A"){
-						$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='51px' height='76px'/>");
+						$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
 						$('#ace').show(1000);
 					}
 				}
@@ -297,7 +322,7 @@ function do_deal() {
 					$('#card_shown_1').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 					counter_d=1;
 					if(simbolo=="A"){
-						$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='51px' height='76px'/>");
+						$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
 						$('#ace').show(1000);
 					}
 				}	
@@ -315,7 +340,7 @@ function do_deal() {
 					$('#card_shown_4').html("<img id='cards_2' src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 					counter_p=2;
 					if(simbolo=="A"){
-						$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='51px' height='76px'/>");
+						$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
 						$('#ace').show(1000);
 					}					
 				}
@@ -327,7 +352,7 @@ function do_deal() {
 					$('#card_shown_3').html("<img id='cards_2' src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 					counter_d=2;
 					if(simbolo=="A"){
-						$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='51px' height='76px'/>");
+						$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
 						$('#ace').show(1000);
 					}
 				}
@@ -356,7 +381,7 @@ function do_hit() {
 							schema=obj.sxima;
 							$('#card_shown_'+hit_p).html("<img src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 							if(simbolo=="A"){
-								$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='51px' height='76px'/>");
+								$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
 								$('#ace').show(1000);
 							}
 						}
@@ -367,7 +392,7 @@ function do_hit() {
 							schema=obj.sxima;
 							$('#card_shown_'+hit_p).html("<img src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 							if(simbolo=="A"){
-								$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='51px' height='76px'/>");
+								$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
 								$('#ace').show(1000);
 							}
 						}
@@ -379,7 +404,7 @@ function do_hit() {
 				}
 				else if(game_status.turn=='Dealer')
 				{
-					if(counter_d<5)
+					if(counter_p<5)
 					{	
 						if(hit_d==5)
 						{
@@ -388,7 +413,7 @@ function do_hit() {
 							schema=obj.sxima;
 							$('#card_shown_'+hit_d).html("<img src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 							if(simbolo=="A"){
-								$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='51px' height='76px'/>");
+								$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
 								$('#ace').show(1000);
 							}
 						}
@@ -399,7 +424,7 @@ function do_hit() {
 							schema=obj.sxima;
 							$('#card_shown_'+hit_d).html("<img src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 							if(simbolo=="A"){
-								$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='51px' height='76px'/>");
+								$('#ace_image').html("<img id='cards' src='classic-cards/"+simbolo+"_"+schema+".png' width='25px' height='42px'/>");
 								$('#ace').show(1000);
 							}
 						}
@@ -425,67 +450,103 @@ function do_stand() {
 		$('#hit').hide(1000);
 		$('#stand').hide(1000);
 		$.ajax({url: 'blackjack.php/deck/stand/' , method: "GET" , headers: {"X-Token": me.token} , success: function(){ console.log("Success is standing dealer "); } });
-		refresh_player();
+		refresh_player_cards();
+		refresh_player_points();
 		
 	}
 	
 }
 
-function refresh_dealer() {
-	var obj;
+function refresh_dealer_cards() {
 	var simbolo;
 	var schema;
 	hit_d=1;
-	var sum_dealer=0;
-	/*Edw Pairnw mono ta fylla pou exei traviksei kai DEN Ypologizw dynamika tous pontous*/
-	$.ajax({url: 'blackjack.php/deck/fetch/Dealer/cards' , method: "GET" , headers: {"X-Token": me.token} , success: 
+	
+	/*Edw Pairnw mono ta fylla pou exei traviksei me DEN Ypologizw dynamika tous pontous*/
+	$.ajax({url: 'blackjack.php/deck/fetch/' ,
+	 method: "POST" , 
+	 headers: {"X-Token": me.token} , 
+	 dataType: "json",
+	 contentType: 'application/json',
+	 data: JSON.stringify( {action:"cards",melos:"Dealer"}),
+	 success: 
 		function(data)
 		{
-			obj=JSON.parse(data);
-			for(var i=0;i<obj.length;i++)
+			//var obj=JSON.parse(data);
+			for(var i=0;i<data.length;i++)
 			{
-				simbolo=obj[i].symbol;
-				schema=obj[i].sxima;
+				simbolo=data[i].symbol;
+				schema=data[i].sxima;
 				$('#card_shown_'+hit_d).html("<img src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 				hit_d+=2;
 			}		
 		} });
-		/*Edw pairnw mono tous pontous poy exoun eisaxthei sthn vash*/
-	$.ajax({url: 'blackjack.php/deck/fetch/Dealer/points' , method: "GET" , headers: {"X-Token": me.token} , success: 
-		function(data)
-		{
-			obj=JSON.parse(data);
-			sum_dealer=parseInt(obj.points);
-			$('#dealer-score-value').html(sum_dealer);		
-		} });
+	
 	
 }
 
-function refresh_player() {
-	var obj;
+function refresh_dealer_points()
+{
+		var sum_dealer=0;
+		/*Edw pairnw mono tous pontous poy exoun eisaxthei sthn vash*/
+		$.ajax({url: 'blackjack.php/deck/fetch/' , 
+		method: "POST" , 
+		headers: {"X-Token": me.token} , 
+		dataType: "json",
+		contentType: 'application/json',
+		data: JSON.stringify({action:"points",melos:"Dealer"}),
+		success: 
+			function(data)
+			{
+				//var obj=JSON.parse(data);
+				sum_dealer=parseInt(data.points);
+				$('#dealer-score-value').html(sum_dealer);		
+			} });
+}
+
+function refresh_player_cards() {
 	var simbolo;
 	var schema;
 	hit_p=2;
-	var sum_player=0;
+
 	/*Edw Pairnw mono ta fylla pou exei traviksei o player me DEN Ypologizw dynamika tous pontous*/
-	$.ajax({url: 'blackjack.php/deck/fetch/Player/cards' , method: "GET" , headers: {"X-Token": me.token} , success: 
+	$.ajax({url: 'blackjack.php/deck/fetch/' , 
+	method: "POST" , 
+	headers: {"X-Token": me.token} , 
+	dataType: "json",
+	contentType: 'application/json',
+	data: JSON.stringify({action:"cards", melos:"Player"}),
+	success: 
 		function(data)
 		{
-			obj=JSON.parse(data);
-			for(var i=0;i<obj.length;i++)
+			//var obj=JSON.parse(data);
+			for(var i=0;i<data.length;i++)
 			{
-				simbolo=obj[i].symbol;
-				schema=obj[i].sxima;
+				simbolo=data[i].symbol;
+				schema=data[i].sxima;
 				$('#card_shown_'+hit_p).html("<img src='classic-cards/"+simbolo+"_"+schema+".png' width='71px' height='96px'/>");
 				hit_p+=2;
 			}		
 		} });
-		/*Edw pairnw mono tous pontous poy exoun eisaxthei sthn vash*/
-	$.ajax({url: 'blackjack.php/deck/fetch/Player/points' , method: "GET" , headers: {"X-Token": me.token} , success: 
+		
+	
+}
+
+function refresh_player_points()
+{
+	var sum_player=0;
+	/*Edw pairnw mono tous pontous poy exoun eisaxthei sthn vash*/
+	$.ajax({url: 'blackjack.php/deck/fetch/' ,
+	 method: "POST" , 
+	 headers: {"X-Token": me.token},
+	 dataType: "json",
+	contentType: 'application/json',
+	data: JSON.stringify({action:"points",melos:"Player"}), 
+	success: 
 		function(data)
 		{
-			obj=JSON.parse(data);
-			sum_player=parseInt(obj.points);
+			//var obj=JSON.parse(data);
+			sum_player=parseInt(data.points);
 			$('#player-score-value').html(sum_player);			
 		} });
 }
@@ -517,75 +578,4 @@ function ace_eleven(){
 	ace_point=11;
 	$('#ace').hide(1000);
 }
-/*
-function autoDealer(){
-	if (game_status.turn=='Dealer')
-	{
-	while (dealer_points <= 16)
-	{
-		for(i=0;i<dealer_cards.length;i++)
-		{
-			obj=dealer_cards[i];
-			if(obj.symbol!="A")
-				{
-					dealer_points+=parseInt(obj.value);
-				
-				}
-				else 
-				{
-					if(ace_point==1)
-						dealer_points+=parseInt($('#ace_one').html());
-					else if(ace_point==11)
-						dealer_points+=parseInt($('#ace_eleven').html());
-				}
-			$('#dealer-score-value').html(dealer_points);	
-		}
-		if (dealer_points =< 16)
-		{
-			do_hit();
-		}
-		else
-		{
-			do_stand();
-		}
-	}
-	}
-}
-
-function create_autoDealer(){
-	var username = $Computer;		
-	
-	var melos=$Dealer;
-	$.ajax({url: "blackjack.php/players/"+melos+"/"+username, 
-			method: 'PUT',
-			dataType: "json",
-			headers: {"X-Token": me.token},
-			contentType: 'application/json',
-			data: JSON.stringify( {username: $Computer, melos: $Dealer}),
-			success: login_result ,
-			error: login_error
-			});
-}
-
-
-function login_to_vsComp() {
-	if($('#username').val()=='' ||  $('#username').val()== null ) {
-		alert('You have to set a username');
-		return;
-	}
-	var username = $('#username').val();		
-	
-	var melos=$Player;
-	$.ajax({url: "blackjack.php/players/"+melos+"/"+username, 
-			method: 'PUT',
-			dataType: "json",
-			headers: {"X-Token": me.token},
-			contentType: 'application/json',
-			data: JSON.stringify( {username: $('#username').val(), melos: Player}),
-			success: login_result ,
-			error: login_error
-			});
-	create_autoDealer();
-}
-*/
 });

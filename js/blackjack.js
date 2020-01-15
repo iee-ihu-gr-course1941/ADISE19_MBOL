@@ -240,8 +240,8 @@ function game_status_update() {
 				$('#display_winner').html("IT'S A DRAW!");
 			}
 			else if (game_status.result=="DW"){
-				$.ajax({url :'blackjack.php/players/',
-				 method:"GET",
+				$.ajax({url :'blackjack.php/players/showPlayersInfo',
+				 method:"POST",
 				headers:{"X-token":me.token},
 				dataType: "json",
 				contentType: 'application/json',
@@ -253,8 +253,8 @@ function game_status_update() {
 				
 			}
 			else if (game_status.result=="PW"){
-				$.ajax({url :'blackjack.php/players/', 
-				method:"GET",
+				$.ajax({url :'blackjack.php/players/showPlayersInfo', 
+				method:"POST",
 				 headers:{"X-token":me.token},
 				 dataType: "json",
 				contentType: 'application/json',
